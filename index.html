@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELESTIAL NEXUS V62.0 (Cosmic Intelligence)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        celestial: { 
+                            DEFAULT: '#E0F7FA',
+                            dim: 'rgba(224, 247, 250, 0.08)',
+                            border: 'rgba(224, 247, 250, 0.2)',
+                            gold: '#FFD700',
+                            silver: '#C0C0C0',
+                            purple: '#B39DDB', 
+                            success: '#81C784', 
+                            danger: '#E57373', 
+                            bg: '#02051F'
+                        }
+                    },
+                    fontFamily: { 
+                        sans: ['Montserrat', 'sans-serif'], 
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary: #E0F7FA;
+            --accent-gold: #FFD700;
+            --bg-color: #02051F;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            font-feature-settings: 'tnum';
+        }
+
+        .light {
+            --bg-color: #E8EAF6;
+            --text-primary: #1A237E;
+        }
+        .light body { background-color: #E8EAF6; }
+
+        /* ─── COSMIC BACKGROUND ─── */
+        .nebula-bg {
+            position: fixed; inset: 0; z-index: -2;
+            background: radial-gradient(circle at 50% 120%, #0d1b45, #000000 80%),
+                        radial-gradient(circle at 20% 20%, rgba(60, 20, 100, 0.3), transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(20, 100, 150, 0.2), transparent 50%);
+            animation: nebulaPulse 20s ease-in-out infinite alternate;
+        }
+        
+        .stars {
+            position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 10% 10%, white 1px, transparent 0),
+                radial-gradient(1px 1px at 20% 80%, white 1px, transparent 0),
+                radial-gradient(2px 2px at 40% 40%, white 1px, transparent 0),
+                radial-gradient(1.5px 1.5px at 70% 20%, white 1px, transparent 0),
+                radial-gradient(1px 1px at 90% 60%, white 1px, transparent 0),
+                radial-gradient(1.5px 1.5px at 60% 90%, white 1px, transparent 0);
+            background-size: 550px 550px;
+            opacity: 0.5;
+            animation: starMove 120s linear infinite;
+        }
+
+        @keyframes nebulaPulse {
+            0% { filter: brightness(0.8); }
+            100% { filter: brightness(1.1); }
+        }
+        @keyframes starMove {
+            from { transform: translateY(0); }
+            to { transform: translateY(-550px); }
+        }
+
+        .light .nebula-bg { 
+            background: linear-gradient(180deg, #E8EAF6 0%, #C5CAE9 50%, #E8EAF6 100%);
+            animation: none;
+        }
+        .light .stars { opacity: 0; }
+
+        /* ─── GLASS CARD ─── */
+        .glass-card, .holo-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.01);
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+        .glass-card:hover, .holo-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .light .glass-card, .light .holo-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* ─── VIX VIGNETTE OVERLAY ─── */
+        .vix-vignette {
+            position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0; transition: opacity 0.8s;
+            background: radial-gradient(circle at center, transparent 30%, rgba(100, 0, 0, 0.2) 80%, rgba(50, 0, 0, 0.6) 100%);
+            box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.2);
+        }
+        .vix-vignette.active { opacity: 1; }
+        .vix-alert-banner {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 101; pointer-events: auto;
+        }
+        .vix-content {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6); padding: 40px; border: 1px solid rgba(255, 100, 100, 0.3);
+            backdrop-filter: blur(10px); border-radius: 8px;
+        }
+
+        /* ─── STAR CORE ─── */
+        .star-core-container {
+            position: relative; width: 280px; height: 280px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .star-glow {
+            position: absolute; inset: 40px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(224,247,250,0.1) 60%, transparent 70%);
+            filter: blur(25px);
+            animation: starPulse 5s ease-in-out infinite alternate;
+        }
+        .star-rays {
+            position: absolute; inset: 0; 
+            background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.05) 10deg, transparent 20deg, transparent 100%);
+            border-radius: 50%;
+            animation: spin 80s linear infinite;
+        }
+        .star-core-center {
+            position: relative; width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+            box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.05);
+            z-index: 20;
+        }
+
+        @keyframes starPulse {
+            0% { opacity: 0.6; transform: scale(0.95); }
+            100% { opacity: 0.9; transform: scale(1.05); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── TEXT STYLES ─── */
+        .text-high-contrast { color: #ffffff; }
+        .text-medium-contrast { color: rgba(255, 255, 255, 0.8); }
+        .text-label { color: rgba(255, 255, 255, 0.5); font-weight: 500; letter-spacing: 0.1em; font-size: 0.65rem; }
+        .text-glow { text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
+        
+        .light .text-high-contrast { color: #1A237E; }
+        .light .text-medium-contrast { color: #3949AB; }
+        .light .text-label { color: #5C6BC0; }
+
+        /* ─── BUTTONS ─── */
+        .celestial-btn, .nexus-btn {
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(255, 255, 255, 0.03); 
+            color: #fff;
+            padding: 0.5rem 1rem; 
+            font-family: 'Cinzel', serif; 
+            font-size: 0.7rem; 
+            font-weight: 600;
+            transition: all 0.3s; 
+            letter-spacing: 0.1em; 
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        .celestial-btn:hover, .nexus-btn:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); 
+        }
+        
+        .celestial-btn-gold, .nexus-btn-accent { 
+            border-color: rgba(255, 215, 0, 0.4); 
+            color: #FFD700; 
+            background: rgba(255, 215, 0, 0.05); 
+        }
+        .celestial-btn-gold:hover, .nexus-btn-accent:hover { 
+            background: rgba(255, 215, 0, 0.1); 
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15); 
+        }
+        
+        .celestial-btn-danger, .nexus-btn-danger { 
+            border-color: rgba(255, 100, 100, 0.4); 
+            color: #FF8A80; 
+            background: rgba(255, 100, 100, 0.05); 
+        }
+        .celestial-btn-danger:hover, .nexus-btn-danger:hover { 
+            background: rgba(255, 100, 100, 0.1); 
+        }
+
+        /* ─── INPUTS ─── */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .glass-input, .ghost-input { 
+            background: rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            color: #fff; 
+            text-align: center; 
+            font-family: 'Montserrat'; 
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        .glass-input:focus, .ghost-input:focus { 
+            border-color: rgba(255, 255, 255, 0.4); 
+            outline: none; 
+        }
+        .light .glass-input, .light .ghost-input { 
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1A237E;
+        }
+        
+        /* ─── SCROLLBAR ─── */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        
+        /* ─── STATUS ─── */
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #546E7A; }
+        .status-dot.connected { background: #E0F7FA; box-shadow: 0 0 10px #E0F7FA; }
+        .status-dot.loading { background: #FFD700; animation: blink 0.5s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        /* ─── BADGES ─── */
+        .sector-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 6px; border-radius: 2px; font-size: 9px;
+            font-family: 'Montserrat', sans-serif; font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ─── SLIDERS ─── */
+        .scenario-slider {
+            -webkit-appearance: none; width: 100%; height: 2px;
+            background: rgba(255, 255, 255, 0.1); outline: none;
+        }
+        .scenario-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%;
+            background: #fff; cursor: pointer; box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        /* ─── VIX STATUS BAR ─── */
+        .vix-status-bar { height: 2px; border-radius: 2px; transition: all 0.3s; }
+
+        /* ─── INNER GLASS ─── */
+        .inner-glass {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+        }
+
+        /* ─── COLOR UTILITIES ─── */
+        .text-nexus { color: #E0F7FA; }
+        .text-nexus-accent, .text-celestial-gold { color: #FFD700; }
+        .text-nexus-purple, .text-celestial-purple { color: #E1BEE7; }
+        .text-nexus-success, .text-celestial-success { color: #69F0AE; }
+        .text-nexus-danger, .text-celestial-danger { color: #FF8A80; }
+        .border-nexus { border-color: rgba(224, 247, 250, 0.3); }
+        .bg-nexus-dim { background: rgba(224, 247, 250, 0.05); }
+
+        /* ─── ACCENT BORDERS ─── */
+        .border-accent-gold { border-left: 2px solid rgba(255, 215, 0, 0.5); }
+        .border-accent-purple { border-left: 2px solid rgba(225, 190, 231, 0.5); }
+        .border-accent-success { border-left: 2px solid rgba(105, 240, 174, 0.5); }
+    </style>
+</head>
+<body class="min-h-screen font-sans custom-scrollbar">
+    
+    <!-- COSMIC BACKGROUND -->
+    <div class="nebula-bg"></div>
+    <div class="stars"></div>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- VIX VIGNETTE OVERLAY -->
+    <div id="vix-vignette" class="vix-vignette"></div>
+    <div id="vix-overlay" class="vix-alert-banner hidden">
+        <div class="vix-content">
+            <div class="flex flex-col items-center gap-4 mb-4">
+                <i class="fas fa-meteor text-4xl text-celestial-danger animate-pulse"></i>
+                <span class="text-3xl font-display font-bold text-white tracking-[0.2em]">COSMIC TURBULENCE</span>
+            </div>
+            <div id="vix-alert-message" class="text-white text-lg font-light mb-6 opacity-80">System Instability Detected</div>
+            <button onclick="NexusApp.dismissVixAlert()" class="celestial-btn celestial-btn-danger">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <div class="relative z-10 max-w-[1900px] mx-auto p-4 md:p-6 space-y-5">
+        
+        <!-- HEADER -->
+        <header class="glass-card p-6 flex flex-wrap justify-between items-center gap-6">
+            <div class="flex items-center gap-6">
+                <!-- Abstract Logo -->
+                <div class="w-14 h-14 border border-white/20 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <i class="fas fa-infinity text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold tracking-[0.2em] font-display text-white text-glow">CELESTIAL</h1>
+                    <div class="flex items-center gap-3 mt-2 opacity-60">
+                        <span class="text-[10px] tracking-[0.3em] font-sans border-t border-white/30 pt-1">NEXUS INTELLIGENCE V62</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VIX Widget (Cosmic Style) -->
+            <div id="vix-status-panel" class="flex flex-col gap-1 min-w-[160px]">
+                <div class="flex justify-between items-end">
+                    <span class="text-[9px] tracking-widest opacity-60">STABILITY</span>
+                    <span id="vix-action-text" class="text-[10px] text-celestial-gold font-light">CALM</span>
+                </div>
+                <div class="vix-status-bar bg-white/10 rounded-full h-[3px] overflow-hidden">
+                    <div id="vix-status-bar" class="h-full transition-all duration-500 bg-celestial-success" style="width: 20%"></div>
+                </div>
+                <div class="text-right"><span id="vix-level-badge" class="text-[9px] opacity-50">LOW</span></div>
+            </div>
+
+            <div class="flex items-center gap-10 font-sans px-8 border-l border-r border-white/10">
+                <div class="text-center">
+                    <div class="text-[9px] uppercase tracking-widest mb-1 text-gray-400">Total Assets($)</div>
+                    <div id="header-total" class="text-2xl font-light text-white tracking-tight text-glow">$0.00</div>
+                    <div id="header-pl" class="text-[11px] opacity-80 mt-1 text-celestial-success">(+$0.00)</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-[9px] uppercase tracking-widest mb-1 text-gray-400">Total Assets(₩)</div>
+                    <div id="header-total-krw" class="text-2xl font-light text-white tracking-tight">₩0</div>
+                    <div id="header-pl-krw" class="text-[11px] opacity-80 mt-1 text-celestial-success">(+₩0)</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-end gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="status-text" class="text-[10px] tracking-widest font-light opacity-60">OFFLINE</span>
+                    <div id="clock" class="text-xl font-display font-light w-24 text-center">--:--</div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="NexusApp.toggleTheme()" class="celestial-btn text-[10px] px-2 opacity-50 hover:opacity-100" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                    <button onclick="NexusApp.toggleLive()" id="live-btn" class="celestial-btn text-[10px]">CONNECT</button>
+                    <button onclick="NexusApp.openSettingsModal()" class="celestial-btn text-[10px]"><i class="fas fa-cog"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MARKET INDICES -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
+                <div class="text-[9px] tracking-[0.2em] mb-2 opacity-60">NASDAQ</div>
+                <div id="idx-nasdaq" class="text-lg font-display text-white">---</div>
+            </div>
+            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
+                <div class="text-[9px] tracking-[0.2em] mb-2 opacity-60">S&P 500</div>
+                <div id="idx-sp500" class="text-lg font-display text-white">---</div>
+            </div>
+            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
+                <div class="text-[9px] tracking-[0.2em] mb-2 text-celestial-gold">USD/KRW</div>
+                <div id="idx-krw" class="text-lg font-display text-celestial-gold">---</div>
+            </div>
+            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
+                <div class="text-[9px] tracking-[0.2em] mb-2 text-celestial-danger">VIX</div>
+                <div id="idx-vix" class="text-lg font-display text-celestial-danger">---</div>
+            </div>
+            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
+                <div class="text-[9px] tracking-[0.2em] mb-2 text-celestial-success">US 10Y</div>
+                <div id="idx-tnx" class="text-lg font-display text-celestial-success">---</div>
+            </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
+            
+            <!-- ASSET TABLE (3/5) -->
+            <div class="xl:col-span-3 glass-card p-6">
+                <div class="flex justify-between items-end mb-6 pb-2 border-b border-white/10">
+                    <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
+                        <i class="fas fa-star text-celestial-gold text-xs"></i> STELLAR ASSETS
+                    </h2>
+                    <div class="flex gap-3">
+                        <button onclick="NexusApp.refreshPrices()" class="celestial-btn text-[10px]"><i class="fas fa-sync-alt"></i></button>
+                        <button onclick="NexusApp.openAssetModal()" class="celestial-btn text-[10px]">IGNITE STAR</button>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col lg:flex-row gap-6 h-[460px]">
+                    <!-- STAR CORE -->
+                    <div class="lg:w-[320px] flex-shrink-0 flex flex-col items-center justify-center p-4">
+                        <div class="star-core-container">
+                            <div class="star-glow"></div>
+                            <div class="star-rays"></div>
+                            <div class="star-core-center">
+                                <div class="absolute inset-0 z-0 opacity-80 scale-[0.9]">
+                                    <canvas id="coreChart"></canvas>
+                                </div>
+                                <div class="relative z-10 text-center pointer-events-none">
+                                    <div class="text-[10px] tracking-[0.3em] mb-2 opacity-70">TOTAL MASS</div>
+                                    <div id="core-total" class="text-2xl font-display text-white text-glow">$0</div>
+                                    <div id="core-return" class="text-sm font-light mt-1 text-celestial-success">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="asset-legend" class="mt-6 flex flex-wrap justify-center gap-2 px-2 max-h-[100px] overflow-y-auto custom-scrollbar"></div>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="flex-1 overflow-x-auto h-full flex flex-col rounded bg-white/5 border border-white/5">
+                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-sm font-light border-separate border-spacing-y-0">
+                                <thead class="text-[10px] font-sans uppercase tracking-widest sticky top-0 bg-[#0a0f29] z-10">
+                                    <tr>
+                                        <th class="p-3 text-left border-b border-white/10 pl-4 font-normal opacity-70">Constellation</th>
+                                        <th class="p-3 text-center border-b border-white/10 font-normal opacity-70">Return</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Avg</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Price</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Val($)</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Val(₩)</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">FX Rate</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">FX P/L</th>
+                                        <th class="p-3 text-center w-8 border-b border-white/10 font-normal opacity-70"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="asset-table" class="font-light text-gray-300"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTOR ANALYSIS -->
+            <div class="glass-card p-5 border-accent-purple">
+                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                    <h2 class="text-base font-semibold text-high-contrast font-display tracking-widest flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-celestial-purple"></i> SECTOR
+                    </h2>
+                </div>
+
+                <div class="inner-glass p-3 mb-3 rounded-xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] text-label tracking-widest font-medium">ALLOCATION</span>
+                        <span id="sector-count" class="text-[10px] text-white/50 font-mono font-medium">0 SECTORS</span>
+                    </div>
+                    <div style="height: 150px;"><canvas id="sectorChart"></canvas></div>
+                </div>
+
+                <div class="inner-glass p-3 rounded-xl">
+                    <div class="text-[10px] text-label tracking-widest mb-2 font-medium">PERFORMANCE</div>
+                    <div id="sector-table" class="space-y-1 max-h-[120px] overflow-y-auto custom-scrollbar"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div class="inner-glass p-3 text-center rounded-xl border border-white/5">
+                        <div class="text-[9px] text-white/40 tracking-widest mb-0.5 font-medium">CORE</div>
+                        <div id="type-core-value" class="text-base font-semibold text-high-contrast font-display">$0</div>
+                        <div id="type-core-pct" class="text-[11px] text-white/50 font-mono font-medium">0%</div>
+                    </div>
+                    <div class="inner-glass p-3 text-center rounded-xl border border-celestial-gold/20">
+                        <div class="text-[9px] text-celestial-gold/60 tracking-widest mb-0.5 font-medium">INCOME</div>
+                        <div id="type-income-value" class="text-base font-semibold text-high-contrast font-display">$0</div>
+                        <div id="type-income-pct" class="text-[11px] text-celestial-gold font-mono font-medium">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WHAT-IF SIMULATOR -->
+            <div class="glass-card p-5 border-accent-success">
+                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                    <h2 class="text-base font-semibold text-high-contrast font-display tracking-widest flex items-center gap-2">
+                        <i class="fas fa-flask text-celestial-success"></i> WHAT-IF
+                    </h2>
+                    <button onclick="NexusApp.resetScenarios()" class="text-[10px] text-white/40 hover:text-white transition-colors font-medium">RESET</button>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Interest Rate -->
+                    <div class="inner-glass p-3 rounded-xl">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-label font-medium">금리 변동</span>
+                            <span id="rate-value" class="text-[11px] text-high-contrast font-mono font-medium">+0bp</span>
+                        </div>
+                        <input type="range" id="rate-slider" class="scenario-slider" min="-100" max="100" value="0" oninput="NexusApp.updateScenarios()">
+                        <div id="rate-impact" class="text-[10px] text-celestial-danger font-mono mt-1 font-medium">영향: 0%</div>
+                    </div>
+
+                    <!-- NASDAQ -->
+                    <div class="inner-glass p-3 rounded-xl">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-label font-medium">NASDAQ 변동</span>
+                            <span id="nasdaq-value" class="text-[11px] text-high-contrast font-mono font-medium">0%</span>
+                        </div>
+                        <input type="range" id="nasdaq-slider" class="scenario-slider" min="-30" max="30" value="0" oninput="NexusApp.updateScenarios()">
+                        <div id="nasdaq-impact" class="text-[10px] text-celestial-danger font-mono mt-1 font-medium">영향: 0%</div>
+                    </div>
+
+                    <!-- USD/KRW -->
+                    <div class="inner-glass p-3 rounded-xl">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-label font-medium">USD/KRW</span>
+                            <span id="krw-value" class="text-[11px] text-high-contrast font-mono font-medium">₩1,450</span>
+                        </div>
+                        <input type="range" id="krw-slider" class="scenario-slider" min="1200" max="1600" value="1450" oninput="NexusApp.updateScenarios()">
+                        <div id="krw-impact" class="text-[10px] text-celestial-success font-mono mt-1 font-medium">원화 환산: 0%</div>
+                    </div>
+
+                    <!-- VIX Spike -->
+                    <div class="inner-glass p-3 rounded-xl">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-label font-medium">VIX 급등</span>
+                            <span id="vix-sim-value" class="text-[11px] text-high-contrast font-mono font-medium">15</span>
+                        </div>
+                        <input type="range" id="vix-slider" class="scenario-slider" min="10" max="80" value="15" oninput="NexusApp.updateScenarios()">
+                        <div id="vix-impact" class="text-[10px] text-celestial-danger font-mono mt-1 font-medium">예상 MDD: 0%</div>
+                    </div>
+                </div>
+
+                <!-- Scenario Summary -->
+                <div class="mt-3 inner-glass p-4 rounded-xl border border-celestial-purple/20">
+                    <div class="text-[10px] text-celestial-purple tracking-widest mb-1 font-medium">SCENARIO RESULT</div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] text-label font-medium">예상 포트폴리오 변동</span>
+                        <span id="scenario-total-impact" class="text-lg font-semibold text-high-contrast font-display">0%</span>
+                    </div>
+                    <div id="scenario-robustness" class="text-[11px] font-mono mt-1 text-medium-contrast font-medium">견고성: --</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIVIDEND & INCOME STREAM + DPS CHART + LEARNING -->
+        <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
+            <!-- INCOME STREAM (2/5) -->
+            <div class="xl:col-span-2 glass-card p-5 border-accent-gold">
+                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
+                        <i class="fas fa-coins text-celestial-gold text-xs"></i> INCOME STREAM
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="NexusApp.loadFromSheet()" class="celestial-btn text-[10px]" style="border-color: rgba(105,240,174,0.4); color: #69F0AE;">SYNC</button>
+                        <button onclick="NexusApp.toggleDividendModal()" class="celestial-btn-gold text-[10px]">RECORD</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <!-- PLTY -->
+                    <div class="inner-glass p-4 rounded border border-white/5 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-2 text-[20px] text-white/5 font-display font-light">PLTY</div>
+                        <div class="flex justify-between items-center mb-3 relative z-10">
+                            <span class="text-base font-light text-white/80 font-display tracking-widest">PLTY</span>
+                            <span id="plty-return" class="text-[10px] font-light bg-white/5 px-2 py-0.5 border border-white/10 rounded">$0</span>
+                        </div>
+                        <div id="plty-grid" class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] font-light mb-3 opacity-80"></div>
+                        <div class="border-t border-white/10 pt-2">
+                            <div class="flex justify-between mb-1 text-[9px] tracking-widest opacity-50 font-light">
+                                <span>RECOVERY</span> <span id="plty-recovery">0%</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                <div id="plty-bar" class="bg-gradient-to-r from-white/30 to-white/60 h-full transition-all" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HOOY -->
+                    <div class="inner-glass p-4 rounded border border-celestial-gold/20 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-2 text-[20px] text-celestial-gold/10 font-display font-light">HOOY</div>
+                        <div class="flex justify-between items-center mb-3 relative z-10">
+                            <span class="text-base font-light text-celestial-gold font-display tracking-widest">HOOY</span>
+                            <span id="hooy-return" class="text-[10px] font-light bg-celestial-gold/10 px-2 py-0.5 border border-celestial-gold/30 rounded">$0</span>
+                        </div>
+                        <div id="hooy-grid" class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] font-light mb-3 opacity-80"></div>
+                        <div class="border-t border-celestial-gold/20 pt-2">
+                            <div class="flex justify-between mb-1 text-[9px] tracking-widest text-celestial-gold/50 font-light">
+                                <span>RECOVERY</span> <span id="hooy-recovery">0%</span>
+                            </div>
+                            <div class="w-full bg-celestial-gold/10 h-1 rounded-full overflow-hidden">
+                                <div id="hooy-bar" class="bg-gradient-to-r from-celestial-gold/50 to-celestial-gold h-full transition-all" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Summary -->
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div class="inner-glass p-3 text-center rounded border border-celestial-purple/20">
+                        <div class="text-[9px] text-celestial-purple tracking-[0.2em] mb-1 font-light">EST. WEEKLY</div>
+                        <div id="total-weekly-avg" class="text-lg font-display font-light text-white">$0.00</div>
+                        <div class="flex justify-between mt-1 text-[9px] font-light opacity-60">
+                            <span>MIN: <span id="total-weekly-min-val" class="text-white"></span></span>
+                            <span>MAX: <span id="total-weekly-max-val" class="text-white"></span></span>
+                        </div>
+                    </div>
+                    <div class="inner-glass p-3 rounded flex flex-col">
+                        <div class="flex justify-between items-center mb-1 text-[9px] opacity-60 tracking-widest font-light">
+                            <span>RECENT LOGS</span> <i class="fas fa-history text-[8px]"></i>
+                        </div>
+                        <div id="dividend-list" class="overflow-y-auto custom-scrollbar flex-grow max-h-[80px]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DPS TREND CHART (2/5) - NEW -->
+            <div class="xl:col-span-2 glass-card p-5 border-accent-purple">
+                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
+                        <i class="fas fa-chart-area text-celestial-purple text-xs"></i> DPS TREND
+                    </h2>
+                    <div class="flex items-center gap-4 text-[9px] font-light">
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 bg-white/60 rounded-full"></span> <span class="opacity-60">PLTY</span></span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 bg-celestial-gold rounded-full"></span> <span class="opacity-60">HOOY</span></span>
+                    </div>
+                </div>
+                <div style="height: 200px;"><canvas id="dpsChart"></canvas></div>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div class="inner-glass p-3 rounded text-center">
+                        <div class="text-[9px] opacity-50 tracking-widest mb-1 font-light">PLTY AVG DPS</div>
+                        <div id="plty-avg-dps" class="text-base font-display font-light text-white">$0.0000</div>
+                    </div>
+                    <div class="inner-glass p-3 rounded text-center border border-celestial-gold/20">
+                        <div class="text-[9px] text-celestial-gold/50 tracking-widest mb-1 font-light">HOOY AVG DPS</div>
+                        <div id="hooy-avg-dps" class="text-base font-display font-light text-celestial-gold">$0.0000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DIVIDEND LEARNING (1/5) -->
+            <div class="xl:col-span-1 glass-card p-5">
+                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
+                        <i class="fas fa-brain text-white/60 text-xs"></i> LEARNING
+                    </h2>
+                </div>
+
+                <!-- Prediction Accuracy -->
+                <div class="inner-glass p-3 rounded mb-3">
+                    <div class="text-[9px] opacity-50 tracking-widest mb-2 font-light">ACCURACY</div>
+                    <div class="space-y-2">
+                        <div>
+                            <div class="flex justify-between text-[9px] mb-1">
+                                <span class="opacity-70 font-light">PLTY</span>
+                                <span id="plty-accuracy" class="opacity-50 font-light">--</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                                <div id="plty-accuracy-bar" class="bg-gradient-to-r from-white/30 to-white/60 h-full transition-all" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[9px] mb-1">
+                                <span class="opacity-70 font-light">HOOY</span>
+                                <span id="hooy-accuracy" class="text-celestial-gold font-light">--</span>
+                            </div>
+                            <div class="w-full bg-celestial-gold/10 h-1.5 rounded-full overflow-hidden">
+                                <div id="hooy-accuracy-bar" class="bg-gradient-to-r from-celestial-gold/50 to-celestial-gold h-full transition-all" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confidence Interval -->
+                <div class="inner-glass p-3 rounded mb-3">
+                    <div class="text-[9px] opacity-50 tracking-widest mb-2 font-light">95% CI</div>
+                    <div class="space-y-2 text-[9px] font-light">
+                        <div class="bg-white/5 p-2 rounded border border-white/10">
+                            <div class="opacity-50 mb-0.5">PLTY</div>
+                            <div id="plty-ci" class="text-white">$0.00 - $0.00</div>
+                        </div>
+                        <div class="bg-celestial-gold/5 p-2 rounded border border-celestial-gold/20">
+                            <div class="text-celestial-gold/50 mb-0.5">HOOY</div>
+                            <div id="hooy-ci" class="text-white">$0.00 - $0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Stats -->
+                <div class="inner-glass p-3 rounded">
+                    <div class="text-[9px] opacity-50 tracking-widest mb-2 font-light">STATS</div>
+                    <div class="space-y-1 text-[9px] font-light">
+                        <div class="flex justify-between">
+                            <span class="opacity-60">Data Points</span>
+                            <span id="learning-datapoints" class="text-white">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="opacity-60">Period</span>
+                            <span id="learning-period" class="text-white">0일</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="opacity-60">MAE</span>
+                            <span id="learning-mae" class="opacity-50">--</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="opacity-60">Trend</span>
+                            <span id="learning-trend" class="text-white">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="glass-card p-5">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                <h2 class="text-base font-semibold text-high-contrast font-display tracking-widest flex items-center gap-2">
+                    <i class="fas fa-chart-line text-celestial-purple"></i> TIMELINE
+                </h2>
+                <div class="flex items-center gap-4 text-[10px] font-mono font-medium">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 bg-white/30 rounded-full"></span> <span class="text-medium-contrast">COST</span></span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 bg-gradient-to-r from-white/50 to-white rounded-full"></span> <span class="text-medium-contrast">VALUE</span></span>
+                </div>
+            </div>
+            <div style="height: 180px;"><canvas id="timelineChart"></canvas></div>
+            <div class="flex justify-between items-center mt-3 pt-3 border-t border-white/10 text-[10px] font-mono text-medium-contrast">
+                <div class="font-medium">DATA POINTS: <span id="timeline-count" class="text-high-contrast">0</span></div>
+                <button onclick="NexusApp.recordSnapshot()" class="text-white/50 hover:text-white transition-colors font-medium">[ SNAPSHOT ]</button>
+            </div>
+        </div>
+
+        <footer class="text-center text-[10px] text-white/30 font-sans py-6 tracking-[0.3em] font-light">
+            CELESTIAL NEXUS V62.0 // COSMIC INTELLIGENCE EDITION
+        </footer>
+    </div>
+
+    <!-- ASSET MODAL -->
+    <div id="asset-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="glass-card w-[420px] p-6">
+            <div class="flex justify-between items-center mb-5 border-b border-white/10 pb-3">
+                <h3 class="font-semibold text-white text-base tracking-widest font-display">ADD ASSET</h3>
+                <button onclick="NexusApp.closeAssetModal()" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] text-white/50 block mb-1 tracking-widest font-medium">TICKER</label>
+                    <input type="text" id="asset-ticker" class="glass-input py-2.5 w-full uppercase font-semibold rounded-lg" placeholder="e.g. AAPL">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="text-[10px] text-white/50 block mb-1 tracking-widest font-medium">QTY</label>
+                        <input type="number" id="asset-qty" class="glass-input py-2.5 w-full rounded-lg" value="0">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-white/50 block mb-1 tracking-widest font-medium">AVG COST</label>
+                        <input type="number" step="0.01" id="asset-avg" class="glass-input py-2.5 w-full rounded-lg" value="0">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-white/50 block mb-1 tracking-widest font-medium">매입환율</label>
+                        <input type="number" id="asset-buyrate" class="glass-input py-2.5 w-full rounded-lg" placeholder="1450">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] text-white/50 block mb-1 tracking-widest font-medium">TYPE</label>
+                    <select id="asset-type" class="glass-input py-2.5 w-full bg-transparent font-medium rounded-lg">
+                        <option value="CORE">CORE (장기 성장)</option>
+                        <option value="INCOME">INCOME (배당)</option>
+                        <option value="GROWTH">GROWTH (고성장)</option>
+                        <option value="VALUE">VALUE (가치주)</option>
+                        <option value="SPECULATIVE">SPECULATIVE (투기)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] text-white/50 block mb-1 tracking-widest font-medium">SECTOR</label>
+                    <select id="asset-sector" class="glass-input py-2.5 w-full bg-transparent font-medium rounded-lg">
+                        <option value="Technology">🖥️ Technology</option>
+                        <option value="Healthcare">🏥 Healthcare</option>
+                        <option value="Finance">🏦 Finance</option>
+                        <option value="Energy">⚡ Energy</option>
+                        <option value="Consumer">🛒 Consumer</option>
+                        <option value="Industrial">🏭 Industrial</option>
+                        <option value="RealEstate">🏠 Real Estate</option>
+                        <option value="Utilities">💡 Utilities</option>
+                        <option value="Materials">🧱 Materials</option>
+                        <option value="Communication">📡 Communication</option>
+                        <option value="ETF">📊 ETF/Fund</option>
+                        <option value="Crypto">₿ Crypto</option>
+                        <option value="Other">📦 Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-5">
+                <button onclick="NexusApp.closeAssetModal()" class="celestial-btn border-white/20 text-white/50">CANCEL</button>
+                <button onclick="NexusApp.saveAsset()" class="celestial-btn">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIVIDEND MODAL -->
+    <div id="dividend-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="glass-card w-[380px] p-6">
+            <div class="flex justify-between items-center mb-5 border-b border-celestial-gold/20 pb-3">
+                <h3 class="font-semibold text-celestial-gold text-base tracking-widest font-display">DIVIDEND</h3>
+                <button onclick="NexusApp.toggleDividendModal()" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="duplicate-warning" class="hidden bg-celestial-danger/10 border border-celestial-danger/30 p-2 rounded-lg mb-3">
+                <div class="text-[11px] text-celestial-danger font-mono font-medium"><i class="fas fa-exclamation-triangle mr-1"></i> 중복 배당 감지됨!</div>
+            </div>
+            <div class="space-y-3">
+                <div><label class="text-[10px] text-celestial-gold/60 block mb-1 tracking-widest font-medium">DATE</label><input type="date" id="div-date" class="glass-input py-2.5 w-full rounded-lg" onchange="NexusApp.checkDuplicate()"></div>
+                <div><label class="text-[10px] text-celestial-gold/60 block mb-1 tracking-widest font-medium">TICKER</label><select id="div-ticker" onchange="NexusApp.onTickerChange(); NexusApp.checkDuplicate()" class="glass-input py-2.5 w-full bg-transparent font-medium rounded-lg"><option value="PLTY">PLTY</option><option value="HOOY">HOOY</option></select></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="text-[10px] text-celestial-gold/60 block mb-1 tracking-widest font-medium">QTY</label><input type="number" id="div-qty" oninput="NexusApp.updatePreview()" class="glass-input py-2.5 w-full text-right rounded-lg"></div>
+                    <div><label class="text-[10px] text-celestial-gold/60 block mb-1 tracking-widest font-medium">DPS</label><input type="number" id="div-dps" step="0.0001" oninput="NexusApp.updatePreview(); NexusApp.checkDuplicate()" class="glass-input py-2.5 w-full text-right rounded-lg"></div>
+                </div>
+                <div class="inner-glass p-4 text-center rounded-xl border border-celestial-gold/20">
+                    <div class="text-[10px] text-celestial-gold/60 mb-1 tracking-widest font-medium">AFTER TAX</div>
+                    <div id="div-total-preview" class="text-xl font-semibold text-high-contrast font-display">$0.00</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-5">
+                <button onclick="NexusApp.toggleDividendModal()" class="celestial-btn border-white/20 text-white/50">CANCEL</button>
+                <button onclick="NexusApp.addDividend()" class="celestial-btn-gold">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="glass-card w-[380px] p-6">
+            <div class="flex justify-between items-center mb-5 border-b border-celestial-purple/20 pb-3">
+                <h3 class="font-semibold text-celestial-purple text-base tracking-widest font-display">EDIT <span id="edit-ticker-title"></span></h3>
+                <button onclick="NexusApp.closeEditModal()" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <input type="hidden" id="edit-index">
+            <div class="space-y-3">
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="text-[10px] text-celestial-purple/60 block mb-1 tracking-widest font-medium">QTY</label>
+                        <input type="number" id="edit-qty" class="glass-input py-2.5 w-full rounded-lg">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-celestial-purple/60 block mb-1 tracking-widest font-medium">AVG COST</label>
+                        <input type="number" step="0.01" id="edit-avg" class="glass-input py-2.5 w-full rounded-lg">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-celestial-purple/60 block mb-1 tracking-widest font-medium">매입환율</label>
+                        <input type="number" id="edit-buyrate" class="glass-input py-2.5 w-full rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] text-celestial-purple/60 block mb-1 tracking-widest font-medium">TYPE</label>
+                    <select id="edit-type" class="glass-input py-2.5 w-full bg-transparent font-medium rounded-lg">
+                        <option value="CORE">CORE</option>
+                        <option value="INCOME">INCOME</option>
+                        <option value="GROWTH">GROWTH</option>
+                        <option value="VALUE">VALUE</option>
+                        <option value="SPECULATIVE">SPECULATIVE</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] text-celestial-purple/60 block mb-1 tracking-widest font-medium">SECTOR</label>
+                    <select id="edit-sector" class="glass-input py-2.5 w-full bg-transparent font-medium rounded-lg">
+                        <option value="Technology">🖥️ Technology</option>
+                        <option value="Healthcare">🏥 Healthcare</option>
+                        <option value="Finance">🏦 Finance</option>
+                        <option value="Energy">⚡ Energy</option>
+                        <option value="Consumer">🛒 Consumer</option>
+                        <option value="Industrial">🏭 Industrial</option>
+                        <option value="RealEstate">🏠 Real Estate</option>
+                        <option value="Utilities">💡 Utilities</option>
+                        <option value="Materials">🧱 Materials</option>
+                        <option value="Communication">📡 Communication</option>
+                        <option value="ETF">📊 ETF/Fund</option>
+                        <option value="Crypto">₿ Crypto</option>
+                        <option value="Other">📦 Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-5">
+                <button onclick="NexusApp.closeEditModal()" class="celestial-btn border-white/20 text-white/50">CANCEL</button>
+                <button onclick="NexusApp.updateAssetFromModal()" class="celestial-btn" style="border-color: rgba(179, 157, 219, 0.4); color: #B39DDB;">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="glass-card w-[440px] p-6">
+            <div class="flex justify-between items-center mb-5 border-b border-white/10 pb-3">
+                <h3 class="font-semibold text-white text-base tracking-widest font-display"><i class="fas fa-cog mr-2"></i>SETTINGS</h3>
+                <button onclick="NexusApp.closeSettingsModal()" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <!-- Exchange Rate Override -->
+                <div class="inner-glass p-4 rounded-xl">
+                    <label class="text-[10px] text-white/50 block mb-2 tracking-widest font-medium">환율 수동 설정 (USD/KRW)</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="manual-rate" class="glass-input py-2 flex-1 rounded-lg" placeholder="1450">
+                        <button onclick="NexusApp.setManualRate()" class="celestial-btn text-[10px]">APPLY</button>
+                    </div>
+                    <div class="text-[10px] text-white/40 mt-1 font-medium">현재: ₩<span id="current-rate-display">1,450</span></div>
+                </div>
+
+                <!-- Data Export/Import -->
+                <div class="inner-glass p-4 rounded-xl">
+                    <label class="text-[10px] text-white/50 block mb-2 tracking-widest font-medium">데이터 백업/복원</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="NexusApp.exportData()" class="celestial-btn text-[10px]"><i class="fas fa-download mr-1"></i>EXPORT</button>
+                        <label class="celestial-btn text-[10px] text-center cursor-pointer">
+                            <i class="fas fa-upload mr-1"></i>IMPORT
+                            <input type="file" id="import-file" accept=".json" class="hidden" onchange="NexusApp.importData(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Google Sheet URL -->
+                <div class="inner-glass p-4 rounded-xl">
+                    <label class="text-[10px] text-white/50 block mb-2 tracking-widest font-medium">Google Apps Script URL</label>
+                    <input type="text" id="script-url-input" class="glass-input py-2 w-full text-left text-[11px] rounded-lg" placeholder="https://script.google.com/...">
+                    <button onclick="NexusApp.saveScriptUrl()" class="celestial-btn text-[10px] w-full mt-2">SAVE URL</button>
+                </div>
+
+                <!-- Reset Data -->
+                <div class="inner-glass p-4 rounded-xl border border-celestial-danger/20">
+                    <label class="text-[10px] text-celestial-danger block mb-2 tracking-widest font-medium">데이터 초기화</label>
+                    <button onclick="NexusApp.resetAllData()" class="celestial-btn-danger text-[10px] w-full"><i class="fas fa-trash mr-1"></i>RESET ALL</button>
+                </div>
+            </div>
+            <button onclick="NexusApp.closeSettingsModal()" class="celestial-btn w-full mt-5">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    // NEXUS CELESTIAL V62.0 (Celestial Glass Edition)
+    // JavaScript Logic - UNCHANGED from original
+    // ═══════════════════════════════════════════════════════════════
+
+    const NexusApp = (() => {
+        // ─── SECTOR & VIX DEFINITIONS ───
+        const SECTORS = {
+            Technology:    { emoji: '🖥️', color: '#90CAF9', label: 'Tech' },
+            Healthcare:    { emoji: '🏥', color: '#81C784', label: 'Health' },
+            Finance:       { emoji: '🏦', color: '#FFD700', label: 'Finance' },
+            Energy:        { emoji: '⚡', color: '#FFB74D', label: 'Energy' },
+            Consumer:      { emoji: '🛒', color: '#F48FB1', label: 'Consumer' },
+            Industrial:    { emoji: '🏭', color: '#B39DDB', label: 'Industrial' },
+            RealEstate:    { emoji: '🏠', color: '#CE93D8', label: 'RE' },
+            Utilities:     { emoji: '💡', color: '#80DEEA', label: 'Util' },
+            Materials:     { emoji: '🧱', color: '#FFCC80', label: 'Materials' },
+            Communication: { emoji: '📡', color: '#9FA8DA', label: 'Comm' },
+            ETF:           { emoji: '📊', color: '#B39DDB', label: 'ETF' },
+            Crypto:        { emoji: '₿', color: '#F7931A', label: 'Crypto' },
+            Other:         { emoji: '📦', color: '#90A4AE', label: 'Other' }
+        };
+
+        const VIX_LEVELS = {
+            LOW:     { max: 15, color: '#81C784', action: '정상 운용', label: 'LOW' },
+            NORMAL:  { max: 25, color: '#FFD700', action: '모니터링 강화', label: 'NORMAL' },
+            HIGH:    { max: 35, color: '#FFB74D', action: '방어적 포지션 권고', label: 'HIGH' },
+            EXTREME: { max: 100, color: '#E57373', action: '긴급 리스크 점검', label: 'EXTREME' }
+        };
+
+        const TYPE_COLORS = { CORE: '#E0F7FA', INCOME: '#FFD700', GROWTH: '#81C784', VALUE: '#B39DDB', SPECULATIVE: '#E57373' };
+
+        const state = {
+            assets: JSON.parse(localStorage.getItem('nexus_assets_v62')) || [
+                { ticker: 'PLTY', qty: 100, avg: 27.00, price: 0, type: 'INCOME', sector: 'ETF', buyRate: 1450 },
+                { ticker: 'HOOY', qty: 100, avg: 34.00, price: 0, type: 'INCOME', sector: 'ETF', buyRate: 1450 }
+            ],
+            dividends: JSON.parse(localStorage.getItem('nexus_dividends')) || [],
+            timeline: JSON.parse(localStorage.getItem('nexus_timeline')) || [],
+            exchangeRate: parseFloat(localStorage.getItem('nexus_rate')) || 1450,
+            tradeSums: JSON.parse(localStorage.getItem('nexus_trade_sums')) || { PLTY: 0, HOOY: 0 },
+            lastAutoSnapshot: localStorage.getItem('nexus_last_snapshot') || '',
+            scriptUrl: localStorage.getItem('nexus_script_url') || '',
+            theme: localStorage.getItem('nexus_theme') || 'dark',
+            vixAlertDismissed: false,
+            market: { nasdaq: 0, sp500: 0, vix: 0, tnx: 0, krw: 0 },
+            isLive: false,
+            isFetching: false
+        };
+
+        const charts = {};
+        let liveInterval = null;
+        const COLORS = ['#90CAF9', '#FFD700', '#B39DDB', '#81C784', '#F48FB1', '#FFB74D', '#80DEEA', '#A5D6A7', '#90A4AE', '#CE93D8'];
+        const PROXY_SERVERS = [
+            (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+            (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`
+        ];
+
+        // ─── UTILS ───
+        const Utils = {
+            formatUSD: (n) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            saveState: () => {
+                localStorage.setItem('nexus_assets_v62', JSON.stringify(state.assets));
+                localStorage.setItem('nexus_dividends', JSON.stringify(state.dividends));
+                localStorage.setItem('nexus_timeline', JSON.stringify(state.timeline));
+                localStorage.setItem('nexus_rate', state.exchangeRate);
+                localStorage.setItem('nexus_trade_sums', JSON.stringify(state.tradeSums));
+                localStorage.setItem('nexus_script_url', state.scriptUrl);
+                localStorage.setItem('nexus_theme', state.theme);
+            }
+        };
+
+        const Toast = {
+            show: (message, type = 'info', duration = 3000) => {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const colors = { success: '#69F0AE', danger: '#FF8A80', info: '#E0F7FA', warning: '#FFD700' };
+                toast.className = 'glass-card px-4 py-2 text-[11px] font-light flex items-center gap-2 backdrop-blur-md';
+                toast.style.borderColor = colors[type] || colors.info;
+                toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : type === 'danger' ? 'times' : type === 'warning' ? 'exclamation' : 'info'}-circle" style="color:${colors[type]}"></i> <span class="text-white">${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), duration);
+            }
+        };
+
+        // ─── VIX ALERT SYSTEM ───
+        const VIXSystem = {
+            getLevel: (vix) => {
+                if (vix < 15) return VIX_LEVELS.LOW;
+                if (vix < 25) return VIX_LEVELS.NORMAL;
+                if (vix < 35) return VIX_LEVELS.HIGH;
+                return VIX_LEVELS.EXTREME;
+            },
+            update: (vix) => {
+                const level = VIXSystem.getLevel(vix);
+                const badge = document.getElementById('vix-level-badge');
+                const action = document.getElementById('vix-action-text');
+                const bar = document.getElementById('vix-status-bar');
+                const vignette = document.getElementById('vix-vignette');
+                
+                badge.innerText = level.label;
+                action.innerText = level.action;
+                action.style.color = level.color;
+                
+                // Progress bar width based on VIX (inverse - lower is better)
+                const barWidth = Math.max(0, 100 - (vix * 2));
+                bar.style.width = barWidth + '%';
+                bar.style.background = level.color;
+
+                // Show vignette for extreme VIX
+                if (vix >= 35 && !state.vixAlertDismissed) {
+                    vignette.classList.add('active');
+                    document.getElementById('vix-overlay').classList.remove('hidden');
+                    document.getElementById('vix-alert-message').innerText = `VIX: ${vix.toFixed(2)} - ${level.action}`;
+                } else {
+                    vignette.classList.remove('active');
+                }
+            }
+        };
+
+        // ─── DIVIDEND LEARNING SYSTEM ───
+        const DividendLearning = {
+            calculate: () => {
+                const results = {};
+                ['PLTY', 'HOOY'].forEach(ticker => {
+                    const logs = state.dividends.filter(d => d.ticker === ticker).map(d => d.dps);
+                    if (logs.length < 3) {
+                        results[ticker] = { accuracy: null, ci: null, trend: null, mae: null };
+                        return;
+                    }
+                    
+                    const avg = logs.reduce((a, b) => a + b, 0) / logs.length;
+                    const std = Math.sqrt(logs.map(x => Math.pow(x - avg, 2)).reduce((a, b) => a + b, 0) / logs.length);
+                    
+                    const ciLow = Math.max(0, avg - 1.96 * std);
+                    const ciHigh = avg + 1.96 * std;
+                    
+                    const withinStd = logs.filter(x => Math.abs(x - avg) <= std).length;
+                    const accuracy = (withinStd / logs.length) * 100;
+                    
+                    let trend = 'stable';
+                    if (logs.length >= 8) {
+                        const firstHalf = logs.slice(0, 4).reduce((a, b) => a + b, 0) / 4;
+                        const lastHalf = logs.slice(-4).reduce((a, b) => a + b, 0) / 4;
+                        if (lastHalf > firstHalf * 1.1) trend = '📈 상승';
+                        else if (lastHalf < firstHalf * 0.9) trend = '📉 하락';
+                        else trend = '➡️ 안정';
+                    }
+                    
+                    const mae = logs.map(x => Math.abs(x - avg)).reduce((a, b) => a + b, 0) / logs.length;
+                    
+                    results[ticker] = { accuracy, ci: [ciLow, ciHigh], trend, mae, avg, std };
+                });
+                return results;
+            },
+            render: () => {
+                const data = DividendLearning.calculate();
+                const allLogs = state.dividends;
+                
+                if (data.PLTY.accuracy !== null) {
+                    document.getElementById('plty-accuracy').innerText = data.PLTY.accuracy.toFixed(0) + '%';
+                    document.getElementById('plty-accuracy-bar').style.width = data.PLTY.accuracy + '%';
+                    document.getElementById('plty-ci').innerText = `$${data.PLTY.ci[0].toFixed(4)} - $${data.PLTY.ci[1].toFixed(4)}`;
+                } else {
+                    document.getElementById('plty-accuracy').innerText = '--';
+                    document.getElementById('plty-accuracy-bar').style.width = '0%';
+                    document.getElementById('plty-ci').innerText = '데이터 부족';
+                }
+                
+                if (data.HOOY.accuracy !== null) {
+                    document.getElementById('hooy-accuracy').innerText = data.HOOY.accuracy.toFixed(0) + '%';
+                    document.getElementById('hooy-accuracy-bar').style.width = data.HOOY.accuracy + '%';
+                    document.getElementById('hooy-ci').innerText = `$${data.HOOY.ci[0].toFixed(4)} - $${data.HOOY.ci[1].toFixed(4)}`;
+                } else {
+                    document.getElementById('hooy-accuracy').innerText = '--';
+                    document.getElementById('hooy-accuracy-bar').style.width = '0%';
+                    document.getElementById('hooy-ci').innerText = '데이터 부족';
+                }
+                
+                document.getElementById('learning-datapoints').innerText = allLogs.length;
+                if (allLogs.length >= 2) {
+                    const dates = allLogs.map(d => new Date(d.date)).sort((a, b) => a - b);
+                    const days = Math.ceil((dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60 * 24));
+                    document.getElementById('learning-period').innerText = days + '일';
+                } else {
+                    document.getElementById('learning-period').innerText = '--';
+                }
+                
+                const avgMae = [data.PLTY.mae, data.HOOY.mae].filter(x => x !== null);
+                document.getElementById('learning-mae').innerText = avgMae.length ? ('$' + (avgMae.reduce((a, b) => a + b, 0) / avgMae.length).toFixed(4)) : '--';
+                
+                const trends = [data.PLTY.trend, data.HOOY.trend].filter(x => x !== null);
+                document.getElementById('learning-trend').innerText = trends[0] || '--';
+            }
+        };
+
+        // ─── API ───
+        const API = {
+            fetchWithProxy: async (url, proxyIndex = 0) => {
+                if (proxyIndex >= PROXY_SERVERS.length) throw new Error('All proxies failed');
+                try {
+                    const proxyUrl = PROXY_SERVERS[proxyIndex](url);
+                    const response = await fetch(proxyUrl);
+                    const data = await response.json();
+                    let contents = data.contents || (typeof data === 'string' ? data : JSON.stringify(data));
+                    return JSON.parse(contents);
+                } catch (e) {
+                    return API.fetchWithProxy(url, proxyIndex + 1);
+                }
+            },
+            fetchStockPrice: async (ticker) => {
+                if (!ticker) return null;
+                try {
+                    const json = await API.fetchWithProxy(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`);
+                    return json.chart.result[0].meta.regularMarketPrice;
+                } catch (e) { console.error(ticker, e); return null; }
+            },
+            fetchMarketData: async () => {
+                const indices = [
+                    { key: 'nasdaq', ticker: '^IXIC' }, { key: 'sp500', ticker: '^GSPC' },
+                    { key: 'vix', ticker: '^VIX' }, { key: 'tnx', ticker: '^TNX' }, { key: 'krw', ticker: 'KRW=X' }
+                ];
+                await Promise.all(indices.map(async (idx) => {
+                    const price = await API.fetchStockPrice(idx.ticker);
+                    if (price) {
+                        state.market[idx.key] = price;
+                        if (idx.key === 'krw') state.exchangeRate = price;
+                    }
+                }));
+                Utils.saveState();
+                Render.market();
+            }
+        };
+
+        // ─── SECTOR ANALYSIS ───
+        const SectorAnalysis = {
+            calculate: () => {
+                const sectorData = {};
+                let totalValue = 0, totalCost = 0;
+                state.assets.forEach(a => {
+                    const sector = a.sector || 'Other';
+                    const value = a.qty * a.price, cost = a.qty * a.avg;
+                    totalValue += value; totalCost += cost;
+                    if (!sectorData[sector]) sectorData[sector] = { value: 0, cost: 0, profit: 0, assets: [] };
+                    sectorData[sector].value += value;
+                    sectorData[sector].cost += cost;
+                    sectorData[sector].profit += value - cost;
+                    sectorData[sector].assets.push(a);
+                });
+                Object.keys(sectorData).forEach(sector => {
+                    const s = sectorData[sector];
+                    s.pct = totalValue > 0 ? (s.value / totalValue * 100) : 0;
+                    s.returnPct = s.cost > 0 ? ((s.value - s.cost) / s.cost * 100) : 0;
+                });
+                return { sectorData, totalValue, totalCost };
+            },
+            getTypeDistribution: () => {
+                const typeData = { CORE: 0, INCOME: 0, GROWTH: 0, VALUE: 0, SPECULATIVE: 0 };
+                let totalValue = 0;
+                state.assets.forEach(a => {
+                    const type = a.type || 'CORE', value = a.qty * a.price;
+                    if (typeData[type] !== undefined) typeData[type] += value;
+                    totalValue += value;
+                });
+                return { typeData, totalValue };
+            }
+        };
+
+        // ─── SCENARIO SIMULATOR ───
+        const ScenarioSim = {
+            calculate: () => {
+                const rate = parseInt(document.getElementById('rate-slider').value);
+                const nasdaq = parseInt(document.getElementById('nasdaq-slider').value);
+                const krw = parseInt(document.getElementById('krw-slider').value);
+                const vixSim = parseInt(document.getElementById('vix-slider').value);
+                
+                document.getElementById('rate-value').innerText = (rate >= 0 ? '+' : '') + rate + 'bp';
+                document.getElementById('nasdaq-value').innerText = (nasdaq >= 0 ? '+' : '') + nasdaq + '%';
+                document.getElementById('krw-value').innerText = '₩' + krw.toLocaleString();
+                document.getElementById('vix-sim-value').innerText = vixSim;
+                
+                const rateImpact = -rate * 0.05;
+                const nasdaqImpact = nasdaq * 0.8;
+                const krwImpact = ((krw - state.exchangeRate) / state.exchangeRate) * 100;
+                const vixMDD = vixSim > 20 ? -(vixSim - 20) * 0.5 : 0;
+                
+                document.getElementById('rate-impact').innerText = `영향: ${rateImpact >= 0 ? '+' : ''}${rateImpact.toFixed(1)}%`;
+                document.getElementById('rate-impact').className = `text-[10px] font-mono mt-1 font-medium ${rateImpact >= 0 ? 'text-celestial-success' : 'text-celestial-danger'}`;
+                
+                document.getElementById('nasdaq-impact').innerText = `영향: ${nasdaqImpact >= 0 ? '+' : ''}${nasdaqImpact.toFixed(1)}%`;
+                document.getElementById('nasdaq-impact').className = `text-[10px] font-mono mt-1 font-medium ${nasdaqImpact >= 0 ? 'text-celestial-success' : 'text-celestial-danger'}`;
+                
+                document.getElementById('krw-impact').innerText = `원화 환산: ${krwImpact >= 0 ? '+' : ''}${krwImpact.toFixed(1)}%`;
+                document.getElementById('krw-impact').className = `text-[10px] font-mono mt-1 font-medium ${krwImpact >= 0 ? 'text-celestial-success' : 'text-celestial-danger'}`;
+                
+                document.getElementById('vix-impact').innerText = `예상 MDD: ${vixMDD.toFixed(1)}%`;
+                document.getElementById('vix-impact').className = `text-[10px] font-mono mt-1 font-medium ${vixMDD >= 0 ? 'text-celestial-success' : 'text-celestial-danger'}`;
+                
+                const totalImpact = rateImpact + nasdaqImpact + vixMDD;
+                document.getElementById('scenario-total-impact').innerText = (totalImpact >= 0 ? '+' : '') + totalImpact.toFixed(1) + '%';
+                document.getElementById('scenario-total-impact').className = `text-lg font-semibold font-display ${totalImpact >= 0 ? 'text-celestial-success' : 'text-celestial-danger'}`;
+                
+                let robustness = '🟢 견고';
+                if (Math.abs(totalImpact) > 20) robustness = '🔴 취약';
+                else if (Math.abs(totalImpact) > 10) robustness = '🟠 보통';
+                else if (Math.abs(totalImpact) > 5) robustness = '🟡 양호';
+                document.getElementById('scenario-robustness').innerText = `견고성: ${robustness}`;
+            },
+            reset: () => {
+                document.getElementById('rate-slider').value = 0;
+                document.getElementById('nasdaq-slider').value = 0;
+                document.getElementById('krw-slider').value = state.exchangeRate || 1450;
+                document.getElementById('vix-slider').value = 15;
+                ScenarioSim.calculate();
+            }
+        };
+
+        // ─── RENDER ───
+        const Render = {
+            all: () => {
+                Render.assetTable();
+                Render.summary();
+                Render.coreChart();
+                Render.sectorAnalysis();
+                Render.dividendAnalysis();
+                Render.weeklyRange();
+                Render.dividendList();
+                Render.timelineChart();
+                Render.dpsChart();
+                Render.market();
+                DividendLearning.render();
+                ScenarioSim.calculate();
+            },
+            market: () => {
+                const updateEl = (id, val, isPct = false) => {
+                    const el = document.getElementById(id);
+                    if (val && val > 0) el.innerText = isPct ? val.toFixed(2) + '%' : val.toLocaleString(undefined, { maximumFractionDigits: 2 });
+                };
+                updateEl('idx-nasdaq', state.market.nasdaq);
+                updateEl('idx-sp500', state.market.sp500);
+                updateEl('idx-krw', state.market.krw || state.exchangeRate);
+                updateEl('idx-tnx', state.market.tnx, true);
+                
+                const vix = state.market.vix;
+                if (vix) {
+                    document.getElementById('idx-vix').innerText = vix.toFixed(2);
+                    VIXSystem.update(vix);
+                }
+                
+                document.getElementById('current-rate-display').innerText = state.exchangeRate.toLocaleString();
+            },
+            assetTable: () => {
+                const tbody = document.getElementById('asset-table');
+                const legend = document.getElementById('asset-legend');
+                tbody.innerHTML = ''; legend.innerHTML = '';
+                
+                let totalVal = 0;
+                state.assets.forEach(a => totalVal += a.qty * a.price);
+
+                state.assets.forEach((a, i) => {
+                    const value = a.qty * a.price;
+                    const pct = totalVal > 0 ? ((value / totalVal) * 100).toFixed(1) : 0;
+                    const tickerColor = COLORS[i % COLORS.length];
+                    if (value > 0) {
+                        legend.innerHTML += `<div class="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded text-[10px] font-light border border-white/10"><div class="w-2 h-2 rounded-full" style="background-color: ${tickerColor}"></div><span class="text-white">${a.ticker}</span><span class="opacity-50">${pct}%</span></div>`;
+                    }
+                });
+
+                state.assets.forEach((a, i) => {
+                    const cost = a.qty * a.avg, value = a.qty * a.price;
+                    const profit = value - cost;
+                    const pl = cost > 0 ? ((value - cost) / cost * 100) : 0;
+                    const tickerColor = COLORS[i % COLORS.length];
+                    const plClass = pl >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                    const sectorInfo = SECTORS[a.sector] || SECTORS.Other;
+                    const typeColor = TYPE_COLORS[a.type] || TYPE_COLORS.CORE;
+                    const buyRate = a.buyRate || state.exchangeRate;
+                    const costKrw = Math.round(cost * buyRate);
+                    const valueKrw = Math.round(value * state.exchangeRate);
+                    const profitKrw = valueKrw - costKrw;
+                    const profitKrwClass = profitKrw >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                    const fxPL = Math.round(value * (state.exchangeRate - buyRate));
+                    const fxClass = fxPL >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition-all border-b border-white/5 cursor-pointer" onclick="NexusApp.openEditModal(${i})">
+                            <td class="p-3 pl-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 flex items-center justify-center border border-white/20 bg-white/5 rounded">
+                                        <span class="font-display text-[10px]" style="color: ${tickerColor};">${a.ticker}</span>
+                                    </div>
+                                    <div class="flex flex-col gap-0.5">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-[9px] px-1.5 py-0.5 border rounded font-light opacity-70" style="border-color: ${typeColor}40; color: ${typeColor};">${a.type || 'CORE'}</span>
+                                            <span class="text-[10px] opacity-60 font-light">${a.qty}주</span>
+                                        </div>
+                                        <div class="sector-badge" style="background: ${sectorInfo.color}10; border-color: ${sectorInfo.color}30; color: ${sectorInfo.color};">
+                                            ${sectorInfo.emoji} ${sectorInfo.label}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-3 text-center">
+                                <div class="flex flex-col">
+                                    <span class="${plClass} font-light text-[11px]">${profit >= 0 ? '+' : ''}${Utils.formatUSD(profit)}</span>
+                                    <span class="${plClass} text-[9px] opacity-60">(${pl >= 0 ? '+' : ''}${pl.toFixed(1)}%)</span>
+                                </div>
+                            </td>
+                            <td class="p-3 text-right text-[11px] opacity-70 font-light">$${a.avg.toFixed(2)}</td>
+                            <td class="p-3 text-right text-[11px] text-white font-light">$${a.price.toFixed(2)}</td>
+                            <td class="p-3 text-right">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-white font-light">${Utils.formatUSD(cost)}</span>
+                                    <span class="text-[9px] ${plClass} font-light">(${profit >= 0 ? '+' : ''}${Utils.formatUSD(profit)})</span>
+                                </div>
+                            </td>
+                            <td class="p-3 text-right">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-white font-light">₩${costKrw.toLocaleString()}</span>
+                                    <span class="text-[9px] ${profitKrwClass} font-light">(${profitKrw >= 0 ? '+' : ''}₩${Math.abs(profitKrw).toLocaleString()})</span>
+                                </div>
+                            </td>
+                            <td class="p-3 text-right text-[10px] text-celestial-gold font-light">₩${buyRate.toLocaleString()}</td>
+                            <td class="p-3 text-right text-[10px] ${fxClass} font-light">${fxPL >= 0 ? '+' : ''}₩${Math.abs(fxPL).toLocaleString()}</td>
+                            <td class="p-3 text-center"><button onclick="event.stopPropagation(); NexusApp.removeAsset(${i})" class="opacity-30 hover:opacity-100 hover:text-celestial-danger transition-all text-[11px]"><i class="fas fa-times"></i></button></td>
+                        </tr>`;
+                });
+                
+                if (state.assets.length === 0) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 opacity-30 font-light text-[11px]">NO STARS IN CONSTELLATION</td></tr>`;
+            },
+            summary: () => {
+                let totalVal = 0, totalCost = 0, totalCostKrw = 0, totalValKrw = 0;
+                state.assets.forEach(a => { 
+                    const cost = a.qty * a.avg;
+                    const value = a.qty * a.price;
+                    const buyRate = a.buyRate || state.exchangeRate;
+                    totalVal += value; 
+                    totalCost += cost;
+                    totalCostKrw += Math.round(cost * buyRate);
+                    totalValKrw += Math.round(value * state.exchangeRate);
+                });
+                const returnVal = totalVal - totalCost;
+                const returnPct = totalCost > 0 ? (returnVal / totalCost * 100) : 0;
+                const returnKrw = totalValKrw - totalCostKrw;
+                const sign = returnVal >= 0 ? '+' : '';
+                const signKrw = returnKrw >= 0 ? '+' : '';
+                const colorClass = returnVal >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                const colorClassKrw = returnKrw >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+
+                document.getElementById('header-total').innerText = Utils.formatUSD(totalCost);
+                document.getElementById('header-total-krw').innerText = '₩' + totalCostKrw.toLocaleString();
+                document.getElementById('header-pl').innerText = `(${sign}${Utils.formatUSD(Math.abs(returnVal))})`;
+                document.getElementById('header-pl').className = `text-[11px] font-medium mt-0.5 ${colorClass}`;
+                document.getElementById('header-pl-krw').innerText = `(${signKrw}₩${Math.abs(returnKrw).toLocaleString()})`;
+                document.getElementById('header-pl-krw').className = `text-[11px] font-medium mt-0.5 ${colorClassKrw}`;
+                document.getElementById('core-total').innerText = Utils.formatUSD(totalVal);
+                document.getElementById('core-return').innerText = `${sign}${returnPct.toFixed(2)}%`;
+                document.getElementById('core-return').className = `text-[12px] font-mono mt-1 font-semibold ${colorClass}`;
+            },
+            coreChart: () => {
+                const data = state.assets.filter(a => a.qty * a.price > 0);
+                if (!charts.core) {
+                    charts.core = new Chart(document.getElementById('coreChart'), {
+                        type: 'doughnut', data: { labels: [], datasets: [] },
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateRotate: false } }
+                    });
+                }
+                charts.core.data.datasets = [{ data: data.map(a => a.qty * a.price), backgroundColor: data.map((_, i) => COLORS[i % COLORS.length]), borderWidth: 0 }];
+                charts.core.update();
+            },
+            sectorAnalysis: () => {
+                const { sectorData, totalValue } = SectorAnalysis.calculate();
+                const sectors = Object.entries(sectorData).filter(([_, d]) => d.value > 0).sort((a, b) => b[1].value - a[1].value);
+                document.getElementById('sector-count').innerText = `${sectors.length} SECTORS`;
+
+                if (!charts.sector) {
+                    charts.sector = new Chart(document.getElementById('sectorChart'), {
+                        type: 'doughnut', data: { labels: [], datasets: [] },
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${((ctx.raw / totalValue) * 100).toFixed(1)}%` } } } }
+                    });
+                }
+                charts.sector.data.labels = sectors.map(([s]) => SECTORS[s]?.label || s);
+                charts.sector.data.datasets = [{ data: sectors.map(([_, d]) => d.value), backgroundColor: sectors.map(([s]) => SECTORS[s]?.color || '#90A4AE'), borderWidth: 0 }];
+                charts.sector.update();
+
+                document.getElementById('sector-table').innerHTML = sectors.map(([sector, data]) => {
+                    const info = SECTORS[sector] || SECTORS.Other;
+                    const retClass = data.returnPct >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                    return `<div class="flex items-center justify-between p-1.5 bg-white/5 border border-white/5 hover:bg-white/10 transition-colors rounded-lg"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full" style="background: ${info.color};"></div><span class="text-[10px] font-mono text-high-contrast font-medium">${info.emoji} ${sector}</span></div><div class="flex items-center gap-3"><span class="text-[10px] font-mono text-white/50 font-medium">${data.pct.toFixed(1)}%</span><span class="text-[10px] font-mono font-semibold ${retClass}">${data.returnPct >= 0 ? '+' : ''}${data.returnPct.toFixed(1)}%</span></div></div>`;
+                }).join('');
+
+                const { typeData, totalValue: tv } = SectorAnalysis.getTypeDistribution();
+                const coreVal = typeData.CORE + typeData.GROWTH + typeData.VALUE + typeData.SPECULATIVE;
+                const incomeVal = typeData.INCOME;
+                document.getElementById('type-core-value').innerText = Utils.formatUSD(coreVal);
+                document.getElementById('type-core-pct').innerText = (tv > 0 ? (coreVal / tv * 100) : 0).toFixed(1) + '%';
+                document.getElementById('type-income-value').innerText = Utils.formatUSD(incomeVal);
+                document.getElementById('type-income-pct').innerText = (tv > 0 ? (incomeVal / tv * 100) : 0).toFixed(1) + '%';
+            },
+            dividendAnalysis: () => {
+                const taxRate = 0.15;
+                ['PLTY', 'HOOY'].forEach(ticker => {
+                    const asset = state.assets.find(a => a.ticker === ticker);
+                    const logs = state.dividends.filter(d => d.ticker === ticker);
+                    const cost = (asset?.qty || 0) * (asset?.avg || 0);
+                    const value = (asset?.qty || 0) * (asset?.price || 0);
+                    let totalDiv = 0;
+                    logs.forEach(l => { totalDiv += l.dps * (l.qty || 0) * (1 - taxRate); });
+                    const recoveryRate = cost > 0 ? (totalDiv / cost * 100) : 0;
+                    const tradeSum = state.tradeSums[ticker] || 0;
+                    const ret = (value - cost) + totalDiv + tradeSum;
+                    
+                    const prefix = ticker.toLowerCase();
+                    document.getElementById(`${prefix}-grid`).innerHTML = `
+                        <div class="flex justify-between"><span class="font-medium text-white/50">PRINCIPAL</span><span class="text-high-contrast font-semibold">${Utils.formatUSD(cost)}</span></div>
+                        <div class="flex justify-between"><span class="font-medium text-white/50">DIVIDEND</span><span class="text-celestial-gold font-semibold">${Utils.formatUSD(totalDiv)}</span></div>
+                        <div class="flex justify-between"><span class="font-medium text-white/50">VALUATION</span><span class="text-high-contrast font-semibold">${Utils.formatUSD(value)}</span></div>
+                        <div class="flex justify-between"><span class="font-medium text-white/50">TRADE R.</span><span onclick="NexusApp.updateTradeSum('${ticker}')" class="text-high-contrast cursor-pointer border-b border-dotted border-white/30 hover:text-celestial-gold font-semibold">${Utils.formatUSD(tradeSum)}</span></div>`;
+                    document.getElementById(`${prefix}-recovery`).innerText = recoveryRate.toFixed(1) + '%';
+                    document.getElementById(`${prefix}-bar`).style.width = Math.min(recoveryRate, 100) + '%';
+                    const retEl = document.getElementById(`${prefix}-return`);
+                    retEl.innerText = (ret >= 0 ? '+' : '') + Utils.formatUSD(ret);
+                    retEl.className = `text-[10px] font-mono font-semibold px-2 py-0.5 border rounded-md ${ret >= 0 ? 'border-celestial-success/30 text-celestial-success' : 'border-celestial-danger/30 text-celestial-danger'}`;
+                });
+            },
+            weeklyRange: () => {
+                const tax = 0.15, startDate = '2025-10-23';
+                const filterByDate = (d) => new Date(d.date) >= new Date(startDate);
+                const calcStats = (list) => (!list.length) ? { min: 0, max: 0, avg: 0 } : { min: Math.min(...list), max: Math.max(...list), avg: list.reduce((a, b) => a + b, 0) / list.length };
+                
+                const pltyStats = calcStats(state.dividends.filter(d => d.ticker === 'PLTY' && filterByDate(d)).map(l => l.dps));
+                const hooyStats = calcStats(state.dividends.filter(d => d.ticker === 'HOOY' && filterByDate(d)).map(l => l.dps));
+                const pq = state.assets.find(a => a.ticker === 'PLTY')?.qty || 0;
+                const hq = state.assets.find(a => a.ticker === 'HOOY')?.qty || 0;
+
+                document.getElementById('total-weekly-avg').innerText = Utils.formatUSD((pltyStats.avg * pq + hooyStats.avg * hq) * (1 - tax));
+                document.getElementById('total-weekly-min-val').innerText = Utils.formatUSD((pltyStats.min * pq + hooyStats.min * hq) * (1 - tax));
+                document.getElementById('total-weekly-max-val').innerText = Utils.formatUSD((pltyStats.max * pq + hooyStats.max * hq) * (1 - tax));
+            },
+            dividendList: () => {
+                document.getElementById('dividend-list').innerHTML = state.dividends.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 15).map((d, i) => {
+                    const total = d.dps * (d.qty || 0) * 0.85;
+                    const color = d.ticker === 'PLTY' ? 'text-white/60' : 'text-celestial-gold';
+                    return `<div class="flex items-center p-1 hover:bg-white/5 transition-colors text-[10px] font-mono border-b border-white/5"><span class="w-10 text-white/40 font-medium">${d.date.substring(5)}</span><span class="w-10 text-center ${color} font-semibold">${d.ticker}</span><span class="flex-1 text-right text-high-contrast font-semibold">$${total.toFixed(2)}</span><button onclick="NexusApp.removeDividend(${i})" class="w-4 ml-1 text-white/30 hover:text-celestial-danger transition-colors cursor-pointer"><i class="fas fa-times text-[8px]"></i></button></div>`;
+                }).join('');
+            },
+            timelineChart: () => {
+                const data = state.timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
+                document.getElementById('timeline-count').innerText = data.length;
+                if (!charts.timeline) {
+                    charts.timeline = new Chart(document.getElementById('timelineChart'), {
+                        type: 'line', data: { labels: [], datasets: [
+                            { label: 'Cost', data: [], borderColor: 'rgba(255,255,255,0.3)', borderDash: [3, 3], tension: 0.3, pointRadius: 2, borderWidth: 2 },
+                            { label: 'Value', data: [], borderColor: '#E0F7FA', backgroundColor: 'rgba(224,247,250,0.1)', tension: 0.3, pointRadius: 3, borderWidth: 2, fill: true }
+                        ] },
+                        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10, weight: 500 } } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10, weight: 500 } } } }, plugins: { legend: { display: false } } }
+                    });
+                }
+                charts.timeline.data.labels = data.map(d => d.date);
+                charts.timeline.data.datasets[0].data = data.map(d => d.cost);
+                charts.timeline.data.datasets[1].data = data.map(d => d.value);
+                charts.timeline.update();
+            },
+            dpsChart: () => {
+                // Get DPS data sorted by date
+                const pltyData = state.dividends.filter(d => d.ticker === 'PLTY').sort((a, b) => new Date(a.date) - new Date(b.date));
+                const hooyData = state.dividends.filter(d => d.ticker === 'HOOY').sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                // Get all unique dates
+                const allDates = [...new Set([...pltyData.map(d => d.date), ...hooyData.map(d => d.date)])].sort();
+                
+                // Create data points for chart
+                const pltyDps = allDates.map(date => {
+                    const entry = pltyData.find(d => d.date === date);
+                    return entry ? entry.dps : null;
+                });
+                const hooyDps = allDates.map(date => {
+                    const entry = hooyData.find(d => d.date === date);
+                    return entry ? entry.dps : null;
+                });
+                
+                // Calculate averages
+                const pltyAvg = pltyData.length > 0 ? pltyData.reduce((sum, d) => sum + d.dps, 0) / pltyData.length : 0;
+                const hooyAvg = hooyData.length > 0 ? hooyData.reduce((sum, d) => sum + d.dps, 0) / hooyData.length : 0;
+                
+                document.getElementById('plty-avg-dps').innerText = '$' + pltyAvg.toFixed(4);
+                document.getElementById('hooy-avg-dps').innerText = '$' + hooyAvg.toFixed(4);
+                
+                if (!charts.dps) {
+                    charts.dps = new Chart(document.getElementById('dpsChart'), {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [
+                                {
+                                    label: 'PLTY',
+                                    data: [],
+                                    borderColor: 'rgba(255, 255, 255, 0.6)',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                    tension: 0.3,
+                                    pointRadius: 4,
+                                    pointBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    spanGaps: true
+                                },
+                                {
+                                    label: 'HOOY',
+                                    data: [],
+                                    borderColor: '#FFD700',
+                                    backgroundColor: 'rgba(255, 215, 0, 0.08)',
+                                    tension: 0.3,
+                                    pointRadius: 4,
+                                    pointBackgroundColor: '#FFD700',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    spanGaps: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { 
+                                        color: 'rgba(255,255,255,0.4)', 
+                                        font: { size: 9, weight: 300 },
+                                        maxRotation: 45,
+                                        callback: function(val, idx) {
+                                            const label = this.getLabelForValue(val);
+                                            return label ? label.substring(5) : '';
+                                        }
+                                    }
+                                },
+                                y: {
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    ticks: { 
+                                        color: 'rgba(255,255,255,0.4)', 
+                                        font: { size: 9, weight: 300 },
+                                        callback: function(val) {
+                                            return '$' + val.toFixed(2);
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleFont: { size: 11, weight: 300 },
+                                    bodyFont: { size: 10, weight: 300 },
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            return ctx.dataset.label + ': $' + (ctx.raw ? ctx.raw.toFixed(4) : '--');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                charts.dps.data.labels = allDates;
+                charts.dps.data.datasets[0].data = pltyDps;
+                charts.dps.data.datasets[1].data = hooyDps;
+                charts.dps.update();
+            }
+        };
+
+        // ─── ACTIONS ───
+        const Actions = {
+            toggleLive: () => {
+                if (state.isLive) {
+                    clearInterval(liveInterval); liveInterval = null; state.isLive = false;
+                    document.getElementById('live-btn').innerHTML = 'INITIALIZE';
+                    document.getElementById('status-dot').className = 'status-dot';
+                    document.getElementById('status-text').innerText = 'OFFLINE';
+                    Toast.show('DISCONNECTED', 'info');
+                } else {
+                    state.isLive = true;
+                    document.getElementById('live-btn').innerHTML = 'ACTIVE';
+                    Actions.refreshPrices();
+                    liveInterval = setInterval(Actions.refreshPrices, 60000);
+                }
+            },
+            refreshPrices: async () => {
+                if (state.isFetching) return;
+                state.isFetching = true;
+                document.getElementById('status-dot').className = 'status-dot loading';
+                document.getElementById('status-text').innerText = 'SYNC...';
+                await API.fetchMarketData();
+                let success = 0;
+                await Promise.all(state.assets.map(async (asset, i) => {
+                    const price = await API.fetchStockPrice(asset.ticker);
+                    if (price > 0) { state.assets[i].price = price; success++; }
+                }));
+                if (success > 0) {
+                    document.getElementById('status-dot').className = 'status-dot connected';
+                    document.getElementById('status-text').innerText = 'ONLINE';
+                    Toast.show('SYNCHRONIZED', 'success');
+                }
+                Utils.saveState(); Render.all(); state.isFetching = false;
+            },
+            toggleTheme: () => {
+                state.theme = state.theme === 'dark' ? 'light' : 'dark';
+                document.documentElement.className = state.theme;
+                Utils.saveState();
+                Toast.show(`${state.theme.toUpperCase()} MODE`, 'info');
+            },
+            dismissVixAlert: () => {
+                state.vixAlertDismissed = true;
+                document.getElementById('vix-overlay').classList.add('hidden');
+                document.getElementById('vix-vignette').classList.remove('active');
+            },
+            updateScenarios: () => ScenarioSim.calculate(),
+            resetScenarios: () => ScenarioSim.reset(),
+
+            openAssetModal: () => {
+                ['asset-ticker', 'asset-qty', 'asset-avg'].forEach(id => document.getElementById(id).value = id === 'asset-ticker' ? '' : 0);
+                document.getElementById('asset-buyrate').value = state.exchangeRate;
+                document.getElementById('asset-type').value = 'CORE';
+                document.getElementById('asset-sector').value = 'Technology';
+                document.getElementById('asset-modal').classList.remove('hidden');
+            },
+            closeAssetModal: () => document.getElementById('asset-modal').classList.add('hidden'),
+            saveAsset: () => {
+                const ticker = document.getElementById('asset-ticker').value.trim().toUpperCase();
+                if (!ticker) { Toast.show('Enter ticker', 'danger'); return; }
+                state.assets.push({
+                    ticker, qty: parseFloat(document.getElementById('asset-qty').value) || 0,
+                    avg: parseFloat(document.getElementById('asset-avg').value) || 0, price: 0,
+                    type: document.getElementById('asset-type').value,
+                    sector: document.getElementById('asset-sector').value,
+                    buyRate: parseFloat(document.getElementById('asset-buyrate').value) || state.exchangeRate
+                });
+                Utils.saveState(); Actions.closeAssetModal(); Render.all();
+                Toast.show(`${ticker} ADDED`, 'success');
+            },
+            openEditModal: (index) => {
+                const a = state.assets[index]; if (!a) return;
+                document.getElementById('edit-index').value = index;
+                document.getElementById('edit-ticker-title').innerText = a.ticker;
+                document.getElementById('edit-qty').value = a.qty;
+                document.getElementById('edit-avg').value = a.avg;
+                document.getElementById('edit-buyrate').value = a.buyRate || state.exchangeRate;
+                document.getElementById('edit-type').value = a.type || 'CORE';
+                document.getElementById('edit-sector').value = a.sector || 'Other';
+                document.getElementById('edit-modal').classList.remove('hidden');
+            },
+            closeEditModal: () => document.getElementById('edit-modal').classList.add('hidden'),
+            updateAssetFromModal: () => {
+                const i = parseInt(document.getElementById('edit-index').value);
+                if (isNaN(i) || !state.assets[i]) return;
+                state.assets[i].qty = parseFloat(document.getElementById('edit-qty').value) || 0;
+                state.assets[i].avg = parseFloat(document.getElementById('edit-avg').value) || 0;
+                state.assets[i].buyRate = parseFloat(document.getElementById('edit-buyrate').value) || state.exchangeRate;
+                state.assets[i].type = document.getElementById('edit-type').value;
+                state.assets[i].sector = document.getElementById('edit-sector').value;
+                Utils.saveState(); Actions.closeEditModal(); Render.all();
+                Toast.show('UPDATED', 'success');
+            },
+            removeAsset: (i) => { if (confirm('Delete?')) { state.assets.splice(i, 1); Utils.saveState(); Render.all(); } },
+            updateTradeSum: (ticker) => {
+                const input = prompt(`Trade Return (${ticker}):`, state.tradeSums[ticker] || 0);
+                if (input !== null) { state.tradeSums[ticker] = parseFloat(input) || 0; Utils.saveState(); Render.all(); }
+            },
+
+            toggleDividendModal: () => {
+                document.getElementById('dividend-modal').classList.toggle('hidden');
+                document.getElementById('duplicate-warning').classList.add('hidden');
+            },
+            onTickerChange: () => {
+                const t = document.getElementById('div-ticker').value;
+                document.getElementById('div-qty').value = state.assets.find(a => a.ticker === t)?.qty || 0;
+                Actions.updatePreview();
+            },
+            updatePreview: () => {
+                const q = parseFloat(document.getElementById('div-qty').value) || 0;
+                const d = parseFloat(document.getElementById('div-dps').value) || 0;
+                document.getElementById('div-total-preview').innerText = '$' + (q * d * 0.85).toFixed(2);
+            },
+            checkDuplicate: () => {
+                const date = document.getElementById('div-date').value;
+                const ticker = document.getElementById('div-ticker').value;
+                const dps = parseFloat(document.getElementById('div-dps').value) || 0;
+                const isDup = state.dividends.some(d => d.date === date && d.ticker === ticker && Math.abs(d.dps - dps) < 0.001);
+                document.getElementById('duplicate-warning').classList.toggle('hidden', !isDup);
+            },
+            addDividend: () => {
+                const d = {
+                    date: document.getElementById('div-date').value,
+                    ticker: document.getElementById('div-ticker').value,
+                    qty: parseInt(document.getElementById('div-qty').value),
+                    dps: parseFloat(document.getElementById('div-dps').value)
+                };
+                if (!d.date) { Toast.show('Select date', 'warning'); return; }
+                const isDup = state.dividends.some(x => x.date === d.date && x.ticker === d.ticker && Math.abs(x.dps - d.dps) < 0.001);
+                if (isDup) { Toast.show('중복 배당 감지됨', 'warning'); return; }
+                
+                state.dividends.push(d);
+                Utils.saveState(); Actions.toggleDividendModal(); Render.all();
+                Toast.show('RECORDED', 'success');
+            },
+            removeDividend: (i) => { state.dividends.splice(i, 1); Utils.saveState(); Render.all(); },
+
+            openSettingsModal: () => {
+                document.getElementById('script-url-input').value = state.scriptUrl;
+                document.getElementById('manual-rate').value = state.exchangeRate;
+                document.getElementById('settings-modal').classList.remove('hidden');
+            },
+            closeSettingsModal: () => document.getElementById('settings-modal').classList.add('hidden'),
+            setManualRate: () => {
+                const rate = parseFloat(document.getElementById('manual-rate').value);
+                if (rate > 0) { state.exchangeRate = rate; Utils.saveState(); Render.all(); Toast.show('환율 적용됨', 'success'); }
+            },
+            saveScriptUrl: () => {
+                state.scriptUrl = document.getElementById('script-url-input').value;
+                Utils.saveState(); Toast.show('URL 저장됨', 'success');
+            },
+            exportData: () => {
+                const data = { assets: state.assets, dividends: state.dividends, timeline: state.timeline, tradeSums: state.tradeSums, exchangeRate: state.exchangeRate };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `nexus_backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
+                Toast.show('EXPORTED', 'success');
+            },
+            importData: (event) => {
+                const file = event.target.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.assets) state.assets = data.assets;
+                        if (data.dividends) state.dividends = data.dividends;
+                        if (data.timeline) state.timeline = data.timeline;
+                        if (data.tradeSums) state.tradeSums = data.tradeSums;
+                        if (data.exchangeRate) state.exchangeRate = data.exchangeRate;
+                        Utils.saveState(); Render.all();
+                        Toast.show('IMPORTED', 'success');
+                    } catch { Toast.show('Invalid file', 'danger'); }
+                };
+                reader.readAsText(file);
+            },
+            resetAllData: () => {
+                if (confirm('모든 데이터를 삭제하시겠습니까?')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            },
+
+            loadFromSheet: async () => {
+                if (!state.scriptUrl) { Toast.show('Settings에서 URL 설정', 'warning'); return; }
+                Toast.show('CONNECTING...', 'info');
+                try {
+                    const response = await fetch(state.scriptUrl);
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        state.dividends = data; Utils.saveState(); Render.all();
+                        Toast.show(`SYNC: ${data.length} RECORDS`, 'success');
+                    } else { Toast.show('NO DATA', 'info'); }
+                } catch (e) { Toast.show('SYNC FAILED', 'danger'); }
+            },
+            recordSnapshot: () => {
+                let v = 0, c = 0;
+                state.assets.forEach(a => { v += a.qty * a.price; c += a.qty * a.avg; });
+                const t = new Date().toISOString().split('T')[0];
+                const idx = state.timeline.findIndex(x => x.date === t);
+                const entry = { date: t, cost: c, value: v };
+                if (idx >= 0) state.timeline[idx] = entry; else state.timeline.push(entry);
+                Utils.saveState(); Render.timelineChart();
+                Toast.show('SNAPSHOT', 'success');
+            }
+        };
+
+        const updateClock = () => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('ko-KR', { hour12: false });
+        };
+
+        const checkAutoSnapshot = () => {
+            const now = new Date();
+            const hour = now.getHours();
+            const today = now.toISOString().split('T')[0];
+            
+            if (hour >= 9 && hour < 10 && state.lastAutoSnapshot !== today) {
+                const hasValidPrices = state.assets.some(a => a.price > 0);
+                if (hasValidPrices) {
+                    Actions.recordSnapshot();
+                    state.lastAutoSnapshot = today;
+                    localStorage.setItem('nexus_last_snapshot', today);
+                    Toast.show('AUTO SNAPSHOT (09-10시)', 'info');
+                }
+            }
+        };
+
+        const init = () => {
+            document.documentElement.className = state.theme;
+            Render.all();
+            updateClock();
+            setInterval(updateClock, 1000);
+            document.getElementById('krw-slider').value = state.exchangeRate;
+            if (state.market.nasdaq === 0) Actions.refreshPrices();
+            
+            setTimeout(checkAutoSnapshot, 5000);
+            setInterval(checkAutoSnapshot, 60000);
+        };
+
+        return { init, ...Actions };
+    })();
+
+    window.onload = NexusApp.init;
+    </script>
+</body>
+</html>
