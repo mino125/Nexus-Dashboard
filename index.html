@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CELESTIAL NEXUS V62.0 (Cosmic Intelligence)</title>
+    <title>CELESTIAL NEXUS V63.0 (Unified Dashboard)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -312,82 +312,99 @@
 
     <div class="relative z-10 max-w-[1900px] mx-auto p-4 md:p-6 space-y-5">
         
-        <!-- HEADER -->
-        <header class="glass-card p-6 flex flex-wrap justify-between items-center gap-6">
-            <div class="flex items-center gap-6">
-                <!-- Abstract Logo -->
-                <div class="w-14 h-14 border border-white/20 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                    <i class="fas fa-infinity text-2xl text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-bold tracking-[0.2em] font-display text-white text-glow">CELESTIAL</h1>
-                    <div class="flex items-center gap-3 mt-2 opacity-60">
-                        <span class="text-[10px] tracking-[0.3em] font-sans border-t border-white/30 pt-1">NEXUS INTELLIGENCE V62</span>
+        <!-- HEADER (통합 대시보드) -->
+        <header class="glass-card p-5">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <!-- Logo -->
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 border border-white/20 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                        <i class="fas fa-infinity text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-[0.2em] font-display text-white text-glow">CELESTIAL</h1>
+                        <div class="text-[9px] tracking-[0.3em] opacity-50 mt-1">NEXUS INTELLIGENCE V63</div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- VIX Widget (Cosmic Style) -->
-            <div id="vix-status-panel" class="flex flex-col gap-1 min-w-[160px]">
-                <div class="flex justify-between items-end">
-                    <span class="text-[9px] tracking-widest opacity-60">STABILITY</span>
-                    <span id="vix-action-text" class="text-[10px] text-celestial-gold font-light">CALM</span>
-                </div>
-                <div class="vix-status-bar bg-white/10 rounded-full h-[3px] overflow-hidden">
-                    <div id="vix-status-bar" class="h-full transition-all duration-500 bg-celestial-success" style="width: 20%"></div>
-                </div>
-                <div class="text-right"><span id="vix-level-badge" class="text-[9px] opacity-50">LOW</span></div>
-            </div>
 
-            <div class="flex items-center gap-10 font-sans px-8 border-l border-r border-white/10">
-                <div class="text-center">
-                    <div class="text-[9px] uppercase tracking-widest mb-1 text-gray-400">Total Assets($)</div>
-                    <div id="header-total" class="text-2xl font-light text-white tracking-tight text-glow">$0.00</div>
-                    <div id="header-pl" class="text-[11px] opacity-80 mt-1 text-celestial-success">(+$0.00)</div>
+                <!-- Total Assets -->
+                <div class="flex items-center gap-6 px-6 border-l border-white/10">
+                    <div class="text-center">
+                        <div class="text-[8px] uppercase tracking-widest mb-1 opacity-50">Total Assets($)</div>
+                        <div id="header-total" class="text-2xl font-light text-white tracking-tight text-glow">$0.00</div>
+                        <div id="header-pl" class="text-[10px] opacity-80 mt-0.5 text-celestial-success">(+$0.00)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-[8px] uppercase tracking-widest mb-1 opacity-50">Total Assets(₩)</div>
+                        <div id="header-total-krw" class="text-2xl font-light text-white tracking-tight">₩0</div>
+                        <div id="header-pl-krw" class="text-[10px] opacity-80 mt-0.5 text-celestial-success">(+₩0)</div>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <div class="text-[9px] uppercase tracking-widest mb-1 text-gray-400">Total Assets(₩)</div>
-                    <div id="header-total-krw" class="text-2xl font-light text-white tracking-tight">₩0</div>
-                    <div id="header-pl-krw" class="text-[11px] opacity-80 mt-1 text-celestial-success">(+₩0)</div>
-                </div>
-            </div>
 
-            <div class="flex flex-col items-end gap-3">
-                <div class="flex items-center gap-3">
-                    <span class="status-dot" id="status-dot"></span>
-                    <span id="status-text" class="text-[10px] tracking-widest font-light opacity-60">OFFLINE</span>
-                    <div id="clock" class="text-xl font-display font-light w-24 text-center">--:--</div>
+                <!-- Market Indices (2열 정렬) -->
+                <div class="flex gap-8 px-6 border-l border-r border-white/10">
+                    <!-- 좌측 열: NASDAQ, S&P, US10Y -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between gap-4 min-w-[100px]">
+                            <span class="text-[8px] tracking-widest opacity-40">NASDAQ</span>
+                            <span id="idx-nasdaq" class="text-sm font-display text-white">---</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-4">
+                            <span class="text-[8px] tracking-widest opacity-40">S&P 500</span>
+                            <span id="idx-sp500" class="text-sm font-display text-white">---</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-4">
+                            <span class="text-[8px] tracking-widest text-celestial-success/60">US 10Y</span>
+                            <span id="idx-tnx" class="text-sm font-display text-celestial-success">---</span>
+                        </div>
+                    </div>
+                    <!-- 우측 열: USD/KRW, VIX, VIX 상태바 -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between gap-4 min-w-[100px]">
+                            <span class="text-[8px] tracking-widest text-celestial-gold/60">USD/KRW</span>
+                            <span id="idx-krw" class="text-sm font-display text-celestial-gold">---</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-4">
+                            <span class="text-[8px] tracking-widest text-celestial-danger/60">VIX</span>
+                            <span id="idx-vix" class="text-sm font-display text-celestial-danger">---</span>
+                        </div>
+                        <!-- VIX Status Bar -->
+                        <div class="flex items-center gap-2">
+                            <span id="vix-action-text" class="text-[7px] text-celestial-gold font-light hidden">CALM</span>
+                            <div class="flex-1 vix-status-bar bg-white/10 rounded-full h-[2px] overflow-hidden">
+                                <div id="vix-status-bar" class="h-full transition-all duration-500 bg-celestial-success" style="width: 20%"></div>
+                            </div>
+                            <span id="vix-level-badge" class="text-[7px] opacity-40">LOW</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="NexusApp.toggleTheme()" class="celestial-btn text-[10px] px-2 opacity-50 hover:opacity-100" title="Toggle Theme"><i class="fas fa-moon"></i></button>
-                    <button onclick="NexusApp.toggleLive()" id="live-btn" class="celestial-btn text-[10px]">CONNECT</button>
-                    <button onclick="NexusApp.exportForFreedom()" class="celestial-btn celestial-btn-gold text-[10px]" title="Freedom v30 분석용 JSON 내보내기"><i class="fas fa-bolt mr-1"></i>FREEDOM</button>
-                    <button onclick="NexusApp.openSettingsModal()" class="celestial-btn text-[10px]"><i class="fas fa-cog"></i></button>
+
+                <!-- Controls -->
+                <div class="flex flex-col items-end gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="status-dot" id="status-dot"></span>
+                        <span id="status-text" class="text-[9px] tracking-widest font-light opacity-50">OFFLINE</span>
+                        <div id="clock" class="text-lg font-display font-light w-20 text-center">--:--</div>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <button onclick="NexusApp.toggleTheme()" class="celestial-btn text-[9px] px-2 opacity-50 hover:opacity-100" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                        <button onclick="NexusApp.toggleLive()" id="live-btn" class="celestial-btn text-[9px]">CONNECT</button>
+                        <button onclick="NexusApp.exportForFreedom()" class="celestial-btn celestial-btn-gold text-[9px]" title="Freedom v30"><i class="fas fa-bolt mr-1"></i>FREEDOM</button>
+                        <button onclick="NexusApp.openSettingsModal()" class="celestial-btn text-[9px]"><i class="fas fa-cog"></i></button>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <!-- MARKET INDICES -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
-                <div class="text-[9px] tracking-[0.2em] mb-2 opacity-60">NASDAQ</div>
-                <div id="idx-nasdaq" class="text-lg font-display text-white">---</div>
-            </div>
-            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
-                <div class="text-[9px] tracking-[0.2em] mb-2 opacity-60">S&P 500</div>
-                <div id="idx-sp500" class="text-lg font-display text-white">---</div>
-            </div>
-            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
-                <div class="text-[9px] tracking-[0.2em] mb-2 text-celestial-gold">USD/KRW</div>
-                <div id="idx-krw" class="text-lg font-display text-celestial-gold">---</div>
-            </div>
-            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
-                <div class="text-[9px] tracking-[0.2em] mb-2 text-celestial-danger">VIX</div>
-                <div id="idx-vix" class="text-lg font-display text-celestial-danger">---</div>
-            </div>
-            <div class="glass-card p-4 flex flex-col items-center justify-center min-h-[90px]">
-                <div class="text-[9px] tracking-[0.2em] mb-2 text-celestial-success">US 10Y</div>
-                <div id="idx-tnx" class="text-lg font-display text-celestial-success">---</div>
+        <!-- STRATEGY & PLAN (기존 마켓 인덱스 자리) -->
+        <div class="glass-card p-4">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-compass text-celestial-purple text-sm"></i>
+                <span class="text-[10px] tracking-[0.2em] font-display text-celestial-purple">STRATEGY & PLAN</span>
+                <textarea id="strategy-input" 
+                    class="flex-1 bg-black/20 border border-white/10 rounded px-3 py-2 text-[11px] text-white/80 font-light resize-none focus:outline-none focus:border-celestial-purple/40 placeholder-white/30 h-[36px]" 
+                    placeholder="현재 투자 전략, 계획, 메모를 입력하세요... (예: PLTY/HOOY 배당 재투자, VIX 30 이상시 현금 비중 확대)"
+                    onchange="NexusApp.saveStrategy()"></textarea>
+                <span id="strategy-saved" class="text-[8px] text-celestial-success opacity-0 transition-opacity">저장됨</span>
             </div>
         </div>
 
@@ -603,7 +620,8 @@
                 <!-- Weekly Summary -->
                 <div class="grid grid-cols-2 gap-3 mt-3">
                     <div class="inner-glass p-3 text-center rounded border border-celestial-purple/20">
-                        <div class="text-[9px] text-celestial-purple tracking-[0.2em] mb-1 font-light">EST. WEEKLY</div>
+                        <div class="text-[9px] text-celestial-purple tracking-[0.2em] mb-0.5 font-light">EST. WEEKLY</div>
+                        <div class="text-[7px] opacity-40 mb-1">(since 2025-10-23)</div>
                         <div id="total-weekly-avg" class="text-lg font-display font-light text-white">$0.00</div>
                         <div class="flex justify-between mt-1 text-[9px] font-light opacity-60">
                             <span>MIN: <span id="total-weekly-min-val" class="text-white"></span></span>
@@ -735,7 +753,7 @@
         </div>
 
         <footer class="text-center text-[10px] text-white/30 font-sans py-6 tracking-[0.3em] font-light">
-            CELESTIAL NEXUS V62.0 // COSMIC INTELLIGENCE EDITION
+            CELESTIAL NEXUS V63.0 // UNIFIED DASHBOARD EDITION
         </footer>
     </div>
 
@@ -938,8 +956,8 @@
 
     <script>
     // ═══════════════════════════════════════════════════════════════
-    // NEXUS CELESTIAL V62.0 (Celestial Glass Edition)
-    // JavaScript Logic - UNCHANGED from original
+    // NEXUS CELESTIAL V63.0 (Unified Dashboard Edition)
+    // Features: 통합 헤더, Freedom Export, Strategy 메모, 레이아웃 최적화
     // ═══════════════════════════════════════════════════════════════
 
     const NexusApp = (() => {
@@ -980,6 +998,7 @@
             tradeSums: JSON.parse(localStorage.getItem('nexus_trade_sums')) || { PLTY: 0, HOOY: 0 },
             lastAutoSnapshot: localStorage.getItem('nexus_last_snapshot') || '',
             scriptUrl: localStorage.getItem('nexus_script_url') || '',
+            strategy: localStorage.getItem('nexus_strategy') || '',
             theme: localStorage.getItem('nexus_theme') || 'dark',
             vixAlertDismissed: false,
             market: { nasdaq: 0, sp500: 0, vix: 0, tnx: 0, krw: 0 },
@@ -1005,6 +1024,7 @@
                 localStorage.setItem('nexus_rate', state.exchangeRate);
                 localStorage.setItem('nexus_trade_sums', JSON.stringify(state.tradeSums));
                 localStorage.setItem('nexus_script_url', state.scriptUrl);
+                localStorage.setItem('nexus_strategy', state.strategy);
                 localStorage.setItem('nexus_theme', state.theme);
             }
         };
@@ -1770,7 +1790,6 @@
                 Toast.show('EXPORTED', 'success');
             },
             exportForFreedom: () => {
-                // 총 자산 계산
                 let totalValue = 0, totalCost = 0;
                 state.assets.forEach(a => {
                     totalValue += a.qty * a.price;
@@ -1780,7 +1799,7 @@
                 const freedomData = {
                     _meta: {
                         system: "NEXUS Portfolio Export",
-                        version: "v62.0",
+                        version: "v63.0",
                         exportedAt: new Date().toISOString(),
                         purpose: "Freedom v30 Analysis Input"
                     },
@@ -1816,6 +1835,7 @@
                         totalRecords: state.dividends.length,
                         recentDividends: state.dividends.slice(-10)
                     },
+                    strategy: state.strategy,
                     analysisRequest: [
                         "1. 섹터 분산도 및 리스크 집중도 평가",
                         "2. 개별 종목 펀더멘털 분석",
@@ -1831,6 +1851,13 @@
                 a.download = `freedom_analysis_${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
                 Toast.show('FREEDOM JSON 생성됨!', 'success');
+            },
+            saveStrategy: () => {
+                state.strategy = document.getElementById('strategy-input').value;
+                Utils.saveState();
+                const saved = document.getElementById('strategy-saved');
+                saved.style.opacity = '1';
+                setTimeout(() => saved.style.opacity = '0', 2000);
             },
             importData: (event) => {
                 const file = event.target.files[0]; if (!file) return;
@@ -1906,6 +1933,7 @@
             updateClock();
             setInterval(updateClock, 1000);
             document.getElementById('krw-slider').value = state.exchangeRate;
+            document.getElementById('strategy-input').value = state.strategy;
             if (state.market.nasdaq === 0) Actions.refreshPrices();
             
             setTimeout(checkAutoSnapshot, 5000);
