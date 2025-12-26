@@ -547,6 +547,21 @@
             border-color: rgba(0, 0, 0, 0.1);
             color: #1A237E;
         }
+        /* Select dropdown option styling */
+        select.glass-input option {
+            background: #1a1f3a;
+            color: #fff;
+            padding: 8px;
+        }
+        select.glass-input option:hover,
+        select.glass-input option:checked {
+            background: #3d5afe;
+            color: #fff;
+        }
+        .light select.glass-input option {
+            background: #fff;
+            color: #1A237E;
+        }
         
         /* ─── SCROLLBAR ─── */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
@@ -842,6 +857,8 @@
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">Price</th>
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">Val($)</th>
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">Val(₩)</th>
+                                        <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">FX Rate</th>
+                                        <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">FX P/L</th>
                                         <th class="p-3 text-center w-10 border-b border-white/15 font-medium opacity-85"></th>
                                     </tr>
                                 </thead>
@@ -1754,6 +1771,9 @@
                     const costKrw = Math.round(cost * buyRate);
                     const profitKrw = valueKrw - costKrw;
                     const profitKrwClass = profitKrw >= 0 ? 'text-v64-success' : 'text-v64-danger';
+                    // FX P/L 계산
+                    const fxPL = Math.round(value * (state.exchangeRate - buyRate));
+                    const fxClass = fxPL >= 0 ? 'text-v64-success' : 'text-v64-danger';
                     
                     // V64: 경고 배지
                     let warningBadge = '';
@@ -1817,6 +1837,8 @@
                                     <span class="text-[9px] ${profitKrwClass} font-light">(${profitKrw >= 0 ? '+' : ''}₩${Math.abs(profitKrw).toLocaleString()})</span>
                                 </div>
                             </td>
+                            <td class="p-3 text-right text-[10px] text-celestial-gold font-light">₩${buyRate.toLocaleString()}</td>
+                            <td class="p-3 text-right text-[10px] ${fxClass} font-light">${fxPL >= 0 ? '+' : ''}₩${Math.abs(fxPL).toLocaleString()}</td>
                             <td class="p-3 text-center"><button onclick="event.stopPropagation(); NexusApp.removeAsset(${i})" class="opacity-30 hover:opacity-100 hover:text-v64-danger transition-all text-[11px]"><i class="fas fa-times"></i></button></td>
                         </tr>`;
                 });
