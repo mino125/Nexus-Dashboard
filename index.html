@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CELESTIAL NEXUS V63.0 (Unified Dashboard)</title>
+    <title>CELESTIAL NEXUS V63.1 (Enhanced UX)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -96,7 +96,7 @@
         }
         .light .stars { opacity: 0; }
 
-        /* ─── GLASS CARD ─── */
+        /* ─── GLASS CARD HIERARCHY ─── */
         .glass-card, .holo-card {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
@@ -110,9 +110,250 @@
             border-color: rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.04);
         }
+        
+        /* Primary Card - 핵심 정보 */
+        .glass-card-primary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.02);
+        }
+        .glass-card-primary:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 12px 50px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.03);
+        }
+        
+        /* Tertiary Card - 보조 정보 */
+        .glass-card-tertiary {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+        }
+
         .light .glass-card, .light .holo-card {
             background: rgba(255, 255, 255, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* ─── GRADIENT TEXT ─── */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .text-gradient-cyan {
+            background: linear-gradient(135deg, #E0F7FA 0%, #80DEEA 50%, #E0F7FA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ─── GLOW EFFECTS ─── */
+        .glow-success {
+            text-shadow: 0 0 20px rgba(105, 240, 174, 0.5), 0 0 40px rgba(105, 240, 174, 0.3);
+        }
+        .glow-danger {
+            text-shadow: 0 0 20px rgba(255, 138, 128, 0.5), 0 0 40px rgba(255, 138, 128, 0.3);
+        }
+        .glow-gold {
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* ─── NUMBER ANIMATION ─── */
+        .number-animate {
+            transition: all 0.5s ease-out;
+        }
+        @keyframes numberPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .number-changed {
+            animation: numberPulse 0.5s ease-out;
+        }
+
+        /* ─── BUTTON EFFECTS ─── */
+        .celestial-btn, .nexus-btn {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(255, 255, 255, 0.03); 
+            color: #fff;
+            padding: 0.5rem 1rem; 
+            font-family: 'Cinzel', serif; 
+            font-size: 0.7rem; 
+            font-weight: 600;
+            transition: all 0.3s; 
+            letter-spacing: 0.1em; 
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        .celestial-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+        .celestial-btn:active::after {
+            width: 200px;
+            height: 200px;
+        }
+        .celestial-btn:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        .celestial-btn:active {
+            transform: translateY(0);
+        }
+        
+        .celestial-btn-gold, .nexus-btn-accent { 
+            border-color: rgba(255, 215, 0, 0.4); 
+            color: #FFD700; 
+            background: rgba(255, 215, 0, 0.05); 
+        }
+        .celestial-btn-gold:hover, .nexus-btn-accent:hover { 
+            background: rgba(255, 215, 0, 0.15); 
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); 
+        }
+        
+        .celestial-btn-danger, .nexus-btn-danger { 
+            border-color: rgba(255, 100, 100, 0.4); 
+            color: #FF8A80; 
+            background: rgba(255, 100, 100, 0.05); 
+        }
+        .celestial-btn-danger:hover, .nexus-btn-danger:hover { 
+            background: rgba(255, 100, 100, 0.15); 
+        }
+
+        /* ─── LOADING SPINNER ─── */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ─── SKELETON LOADING ─── */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ─── TABLE ENHANCEMENTS ─── */
+        .asset-row {
+            transition: all 0.2s ease;
+        }
+        .asset-row:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+            transform: scale(1.002);
+        }
+        .asset-row-profit {
+            background: linear-gradient(90deg, rgba(105, 240, 174, 0.03) 0%, transparent 100%);
+        }
+        .asset-row-loss {
+            background: linear-gradient(90deg, rgba(255, 138, 128, 0.03) 0%, transparent 100%);
+        }
+        
+        /* Sortable Headers */
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .sortable:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .sortable.active {
+            color: #FFD700;
+        }
+        .sort-icon {
+            margin-left: 4px;
+            opacity: 0.5;
+            font-size: 8px;
+        }
+        .sortable.active .sort-icon {
+            opacity: 1;
+        }
+
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            opacity: 0.5;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        .empty-state-text {
+            font-size: 12px;
+            text-align: center;
+            max-width: 200px;
+            line-height: 1.6;
+        }
+
+        /* ─── PROGRESS BAR ENHANCED ─── */
+        .progress-bar-animated {
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar-animated::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: progressShine 2s infinite;
+        }
+        @keyframes progressShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* ─── TOOLTIP ─── */
+        .tooltip-wrapper {
+            position: relative;
+        }
+        .tooltip-content {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+        .tooltip-wrapper:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 5px);
         }
 
         /* ─── VIX VIGNETTE OVERLAY ─── */
@@ -174,44 +415,6 @@
         .light .text-high-contrast { color: #1A237E; }
         .light .text-medium-contrast { color: #3949AB; }
         .light .text-label { color: #5C6BC0; }
-
-        /* ─── BUTTONS ─── */
-        .celestial-btn, .nexus-btn {
-            border: 1px solid rgba(255, 255, 255, 0.2); 
-            background: rgba(255, 255, 255, 0.03); 
-            color: #fff;
-            padding: 0.5rem 1rem; 
-            font-family: 'Cinzel', serif; 
-            font-size: 0.7rem; 
-            font-weight: 600;
-            transition: all 0.3s; 
-            letter-spacing: 0.1em; 
-            cursor: pointer;
-            border-radius: 2px;
-        }
-        .celestial-btn:hover, .nexus-btn:hover { 
-            background: rgba(255, 255, 255, 0.1); 
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); 
-        }
-        
-        .celestial-btn-gold, .nexus-btn-accent { 
-            border-color: rgba(255, 215, 0, 0.4); 
-            color: #FFD700; 
-            background: rgba(255, 215, 0, 0.05); 
-        }
-        .celestial-btn-gold:hover, .nexus-btn-accent:hover { 
-            background: rgba(255, 215, 0, 0.1); 
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15); 
-        }
-        
-        .celestial-btn-danger, .nexus-btn-danger { 
-            border-color: rgba(255, 100, 100, 0.4); 
-            color: #FF8A80; 
-            background: rgba(255, 100, 100, 0.05); 
-        }
-        .celestial-btn-danger:hover, .nexus-btn-danger:hover { 
-            background: rgba(255, 100, 100, 0.1); 
-        }
 
         /* ─── INPUTS ─── */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -330,13 +533,13 @@
                 <div class="flex items-center gap-6 px-6 border-l border-white/10">
                     <div class="text-center">
                         <div class="text-[8px] uppercase tracking-widest mb-1 opacity-50">Total Assets($)</div>
-                        <div id="header-total" class="text-2xl font-light text-white tracking-tight text-glow">$0.00</div>
-                        <div id="header-pl" class="text-[10px] opacity-80 mt-0.5 text-celestial-success">(+$0.00)</div>
+                        <div id="header-total" class="text-2xl font-light tracking-tight text-gradient-cyan number-animate">$0.00</div>
+                        <div id="header-pl" class="text-[10px] mt-0.5 text-celestial-success glow-success number-animate">(+$0.00)</div>
                     </div>
                     <div class="text-center">
                         <div class="text-[8px] uppercase tracking-widest mb-1 opacity-50">Total Assets(₩)</div>
-                        <div id="header-total-krw" class="text-2xl font-light text-white tracking-tight">₩0</div>
-                        <div id="header-pl-krw" class="text-[10px] opacity-80 mt-0.5 text-celestial-success">(+₩0)</div>
+                        <div id="header-total-krw" class="text-2xl font-light tracking-tight text-gradient-gold number-animate">₩0</div>
+                        <div id="header-pl-krw" class="text-[10px] mt-0.5 text-celestial-success glow-success number-animate">(+₩0)</div>
                     </div>
                 </div>
 
@@ -370,7 +573,7 @@
                                 <span id="idx-vix" class="text-base font-display text-celestial-danger font-medium">---</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="flex-1 vix-status-bar bg-white/10 rounded-full h-[3px] overflow-hidden">
+                                <div class="flex-1 vix-status-bar bg-white/10 rounded-full h-[3px] overflow-hidden progress-bar-animated">
                                     <div id="vix-status-bar" class="h-full transition-all duration-500 bg-celestial-success" style="width: 20%"></div>
                                 </div>
                                 <span id="vix-level-badge" class="text-[8px] opacity-50">LOW</span>
@@ -413,14 +616,14 @@
         <!-- MAIN GRID -->
         <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
             
-            <!-- ASSET TABLE (3/5) -->
-            <div class="xl:col-span-3 glass-card p-6">
+            <!-- ASSET TABLE (3/5) - PRIMARY -->
+            <div class="xl:col-span-3 glass-card glass-card-primary p-6">
                 <div class="flex justify-between items-end mb-6 pb-2 border-b border-white/10">
                     <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
                         <i class="fas fa-star text-celestial-gold text-xs"></i> STELLAR ASSETS
                     </h2>
                     <div class="flex gap-3">
-                        <button onclick="NexusApp.refreshPrices()" class="celestial-btn text-[10px]"><i class="fas fa-sync-alt"></i></button>
+                        <button onclick="NexusApp.refreshPrices()" id="refresh-btn" class="celestial-btn text-[10px]"><i class="fas fa-sync-alt" id="refresh-icon"></i></button>
                         <button onclick="NexusApp.openAssetModal()" class="celestial-btn text-[10px]">IGNITE STAR</button>
                     </div>
                 </div>
@@ -437,8 +640,8 @@
                                 </div>
                                 <div class="relative z-10 text-center pointer-events-none">
                                     <div class="text-[10px] tracking-[0.3em] mb-2 opacity-70">TOTAL MASS</div>
-                                    <div id="core-total" class="text-2xl font-display text-white text-glow">$0</div>
-                                    <div id="core-return" class="text-sm font-light mt-1 text-celestial-success">0%</div>
+                                    <div id="core-total" class="text-3xl font-display text-gradient-cyan number-animate">$0</div>
+                                    <div id="core-return" class="text-base font-light mt-1 text-celestial-success glow-success number-animate">0%</div>
                                 </div>
                             </div>
                         </div>
@@ -451,11 +654,11 @@
                             <table class="w-full text-sm font-light border-separate border-spacing-y-0">
                                 <thead class="text-[10px] font-sans uppercase tracking-widest sticky top-0 bg-[#0a0f29] z-10">
                                     <tr>
-                                        <th class="p-3 text-left border-b border-white/10 pl-4 font-normal opacity-70">Constellation</th>
-                                        <th class="p-3 text-center border-b border-white/10 font-normal opacity-70">Return</th>
+                                        <th class="p-3 text-left border-b border-white/10 pl-4 font-normal opacity-70 sortable" data-sort="ticker">Constellation <i class="fas fa-sort sort-icon"></i></th>
+                                        <th class="p-3 text-center border-b border-white/10 font-normal opacity-70 sortable" data-sort="return">Return <i class="fas fa-sort sort-icon"></i></th>
                                         <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Avg</th>
                                         <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Price</th>
-                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Val($)</th>
+                                        <th class="p-3 text-right border-b border-white/10 font-normal opacity-70 sortable" data-sort="value">Val($) <i class="fas fa-sort sort-icon"></i></th>
                                         <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">Val(₩)</th>
                                         <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">FX Rate</th>
                                         <th class="p-3 text-right border-b border-white/10 font-normal opacity-70">FX P/L</th>
@@ -464,6 +667,14 @@
                                 </thead>
                                 <tbody id="asset-table" class="font-light text-gray-300"></tbody>
                             </table>
+                            <!-- Empty State -->
+                            <div id="empty-assets" class="empty-state hidden">
+                                <i class="fas fa-satellite"></i>
+                                <div class="empty-state-text">
+                                    아직 추가된 자산이 없습니다<br>
+                                    <span class="text-celestial-gold">"IGNITE STAR"</span> 버튼으로<br>첫 자산을 추가하세요
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -663,8 +874,8 @@
                 </div>
             </div>
 
-            <!-- DIVIDEND LEARNING (1/5) -->
-            <div class="xl:col-span-1 glass-card p-5">
+            <!-- DIVIDEND LEARNING (1/5) - TERTIARY -->
+            <div class="xl:col-span-1 glass-card glass-card-tertiary p-5">
                 <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
                     <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
                         <i class="fas fa-brain text-white/60 text-xs"></i> LEARNING
@@ -736,8 +947,8 @@
             </div>
         </div>
 
-        <!-- TIMELINE -->
-        <div class="glass-card p-5">
+        <!-- TIMELINE - TERTIARY -->
+        <div class="glass-card glass-card-tertiary p-5">
             <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
                 <h2 class="text-base font-semibold text-high-contrast font-display tracking-widest flex items-center gap-2">
                     <i class="fas fa-chart-line text-celestial-purple"></i> TIMELINE
@@ -755,7 +966,7 @@
         </div>
 
         <footer class="text-center text-[10px] text-white/30 font-sans py-6 tracking-[0.3em] font-light">
-            CELESTIAL NEXUS V63.0 // UNIFIED DASHBOARD EDITION
+            CELESTIAL NEXUS V63.1 // ENHANCED UX EDITION
         </footer>
     </div>
 
@@ -958,8 +1169,8 @@
 
     <script>
     // ═══════════════════════════════════════════════════════════════
-    // NEXUS CELESTIAL V63.0 (Unified Dashboard Edition)
-    // Features: 통합 헤더, Freedom Export, Strategy 메모, 레이아웃 최적화
+    // NEXUS CELESTIAL V63.1 (Enhanced UX Edition)
+    // Features: 통합 헤더, Freedom Export, 정렬, 글로우 효과, 애니메이션
     // ═══════════════════════════════════════════════════════════════
 
     const NexusApp = (() => {
@@ -1313,7 +1524,15 @@
             assetTable: () => {
                 const tbody = document.getElementById('asset-table');
                 const legend = document.getElementById('asset-legend');
+                const emptyState = document.getElementById('empty-assets');
                 tbody.innerHTML = ''; legend.innerHTML = '';
+                
+                // 빈 상태 처리
+                if (state.assets.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                emptyState.classList.add('hidden');
                 
                 let totalVal = 0;
                 state.assets.forEach(a => totalVal += a.qty * a.price);
@@ -1333,6 +1552,7 @@
                     const pl = cost > 0 ? ((value - cost) / cost * 100) : 0;
                     const tickerColor = COLORS[i % COLORS.length];
                     const plClass = pl >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                    const rowClass = pl >= 0 ? 'asset-row asset-row-profit' : 'asset-row asset-row-loss';
                     const sectorInfo = SECTORS[a.sector] || SECTORS.Other;
                     const typeColor = TYPE_COLORS[a.type] || TYPE_COLORS.CORE;
                     const buyRate = a.buyRate || state.exchangeRate;
@@ -1344,7 +1564,7 @@
                     const fxClass = fxPL >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
 
                     tbody.innerHTML += `
-                        <tr class="hover:bg-white/5 transition-all border-b border-white/5 cursor-pointer" onclick="NexusApp.openEditModal(${i})">
+                        <tr class="${rowClass} transition-all border-b border-white/5 cursor-pointer" onclick="NexusApp.openEditModal(${i})">
                             <td class="p-3 pl-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 flex items-center justify-center border border-white/20 bg-white/5 rounded">
@@ -1363,8 +1583,8 @@
                             </td>
                             <td class="p-3 text-center">
                                 <div class="flex flex-col">
-                                    <span class="${plClass} font-light text-[11px]">${profit >= 0 ? '+' : ''}${Utils.formatUSD(profit)}</span>
-                                    <span class="${plClass} text-[9px] opacity-60">(${pl >= 0 ? '+' : ''}${pl.toFixed(1)}%)</span>
+                                    <span class="${plClass} font-medium text-[11px]">${profit >= 0 ? '+' : ''}${Utils.formatUSD(profit)}</span>
+                                    <span class="${plClass} text-[9px] opacity-70">(${pl >= 0 ? '+' : ''}${pl.toFixed(1)}%)</span>
                                 </div>
                             </td>
                             <td class="p-3 text-right text-[11px] opacity-70 font-light">$${a.avg.toFixed(2)}</td>
@@ -1386,8 +1606,6 @@
                             <td class="p-3 text-center"><button onclick="event.stopPropagation(); NexusApp.removeAsset(${i})" class="opacity-30 hover:opacity-100 hover:text-celestial-danger transition-all text-[11px]"><i class="fas fa-times"></i></button></td>
                         </tr>`;
                 });
-                
-                if (state.assets.length === 0) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 opacity-30 font-light text-[11px]">NO STARS IN CONSTELLATION</td></tr>`;
             },
             summary: () => {
                 let totalVal = 0, totalCost = 0, totalCostKrw = 0, totalValKrw = 0;
@@ -1406,17 +1624,35 @@
                 const sign = returnVal >= 0 ? '+' : '';
                 const signKrw = returnKrw >= 0 ? '+' : '';
                 const colorClass = returnVal >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                const glowClass = returnVal >= 0 ? 'glow-success' : 'glow-danger';
                 const colorClassKrw = returnKrw >= 0 ? 'text-celestial-success' : 'text-celestial-danger';
+                const glowClassKrw = returnKrw >= 0 ? 'glow-success' : 'glow-danger';
 
-                document.getElementById('header-total').innerText = Utils.formatUSD(totalCost);
-                document.getElementById('header-total-krw').innerText = '₩' + totalCostKrw.toLocaleString();
-                document.getElementById('header-pl').innerText = `(${sign}${Utils.formatUSD(Math.abs(returnVal))})`;
-                document.getElementById('header-pl').className = `text-[11px] font-medium mt-0.5 ${colorClass}`;
-                document.getElementById('header-pl-krw').innerText = `(${signKrw}₩${Math.abs(returnKrw).toLocaleString()})`;
-                document.getElementById('header-pl-krw').className = `text-[11px] font-medium mt-0.5 ${colorClassKrw}`;
-                document.getElementById('core-total').innerText = Utils.formatUSD(totalVal);
-                document.getElementById('core-return').innerText = `${sign}${returnPct.toFixed(2)}%`;
-                document.getElementById('core-return').className = `text-[12px] font-mono mt-1 font-semibold ${colorClass}`;
+                // 숫자 변경 애니메이션
+                const animateNumber = (el) => {
+                    el.classList.add('number-changed');
+                    setTimeout(() => el.classList.remove('number-changed'), 500);
+                };
+
+                const headerTotal = document.getElementById('header-total');
+                const headerTotalKrw = document.getElementById('header-total-krw');
+                const headerPl = document.getElementById('header-pl');
+                const headerPlKrw = document.getElementById('header-pl-krw');
+                const coreTotal = document.getElementById('core-total');
+                const coreReturn = document.getElementById('core-return');
+
+                headerTotal.innerText = Utils.formatUSD(totalCost);
+                headerTotalKrw.innerText = '₩' + totalCostKrw.toLocaleString();
+                headerPl.innerText = `(${sign}${Utils.formatUSD(Math.abs(returnVal))})`;
+                headerPl.className = `text-[10px] font-medium mt-0.5 ${colorClass} ${glowClass} number-animate`;
+                headerPlKrw.innerText = `(${signKrw}₩${Math.abs(returnKrw).toLocaleString()})`;
+                headerPlKrw.className = `text-[10px] font-medium mt-0.5 ${colorClassKrw} ${glowClassKrw} number-animate`;
+                coreTotal.innerText = Utils.formatUSD(totalVal);
+                coreReturn.innerText = `${sign}${returnPct.toFixed(2)}%`;
+                coreReturn.className = `text-base font-light mt-1 ${colorClass} ${glowClass} number-animate`;
+
+                // 애니메이션 트리거
+                [headerTotal, headerTotalKrw, coreTotal, coreReturn].forEach(animateNumber);
             },
             coreChart: () => {
                 const data = state.assets.filter(a => a.qty * a.price > 0);
@@ -1656,6 +1892,11 @@
             refreshPrices: async () => {
                 if (state.isFetching) return;
                 state.isFetching = true;
+                
+                // 스피너 효과
+                const refreshIcon = document.getElementById('refresh-icon');
+                refreshIcon.classList.add('spinner');
+                
                 document.getElementById('status-dot').className = 'status-dot loading';
                 document.getElementById('status-text').innerText = 'SYNC...';
                 await API.fetchMarketData();
@@ -1664,6 +1905,10 @@
                     const price = await API.fetchStockPrice(asset.ticker);
                     if (price > 0) { state.assets[i].price = price; success++; }
                 }));
+                
+                // 스피너 중지
+                refreshIcon.classList.remove('spinner');
+                
                 if (success > 0) {
                     document.getElementById('status-dot').className = 'status-dot connected';
                     document.getElementById('status-text').innerText = 'ONLINE';
@@ -1943,6 +2188,44 @@
             
             setTimeout(checkAutoSnapshot, 5000);
             setInterval(checkAutoSnapshot, 60000);
+
+            // 테이블 정렬 기능
+            let sortKey = null, sortAsc = true;
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.dataset.sort;
+                    if (sortKey === key) {
+                        sortAsc = !sortAsc;
+                    } else {
+                        sortKey = key;
+                        sortAsc = true;
+                    }
+                    
+                    // 정렬 아이콘 업데이트
+                    document.querySelectorAll('.sortable').forEach(el => el.classList.remove('active'));
+                    th.classList.add('active');
+                    th.querySelector('.sort-icon').className = `fas fa-sort-${sortAsc ? 'up' : 'down'} sort-icon`;
+                    
+                    // 자산 정렬
+                    state.assets.sort((a, b) => {
+                        let valA, valB;
+                        if (key === 'ticker') {
+                            valA = a.ticker; valB = b.ticker;
+                            return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                        } else if (key === 'return') {
+                            valA = a.avg > 0 ? (a.price - a.avg) / a.avg : 0;
+                            valB = b.avg > 0 ? (b.price - b.avg) / b.avg : 0;
+                        } else if (key === 'value') {
+                            valA = a.qty * a.price;
+                            valB = b.qty * b.price;
+                        }
+                        return sortAsc ? valA - valB : valB - valA;
+                    });
+                    
+                    Render.assetTable();
+                    Render.coreChart();
+                });
+            });
         };
 
         return { init, ...Actions };
