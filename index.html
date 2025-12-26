@@ -361,6 +361,7 @@
                 <div class="flex gap-2">
                     <button onclick="NexusApp.toggleTheme()" class="celestial-btn text-[10px] px-2 opacity-50 hover:opacity-100" title="Toggle Theme"><i class="fas fa-moon"></i></button>
                     <button onclick="NexusApp.toggleLive()" id="live-btn" class="celestial-btn text-[10px]">CONNECT</button>
+                    <button onclick="NexusApp.exportForFreedom()" class="celestial-btn celestial-btn-gold text-[10px]" title="Freedom v30 분석용 JSON 내보내기"><i class="fas fa-bolt mr-1"></i>FREEDOM</button>
                     <button onclick="NexusApp.openSettingsModal()" class="celestial-btn text-[10px]"><i class="fas fa-cog"></i></button>
                 </div>
             </div>
@@ -1767,6 +1768,69 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a'); a.href = url; a.download = `nexus_backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
                 Toast.show('EXPORTED', 'success');
+            },
+            exportForFreedom: () => {
+                // 총 자산 계산
+                let totalValue = 0, totalCost = 0;
+                state.assets.forEach(a => {
+                    totalValue += a.qty * a.price;
+                    totalCost += a.qty * a.avg;
+                });
+                
+                const freedomData = {
+                    _meta: {
+                        system: "NEXUS Portfolio Export",
+                        version: "v62.0",
+                        exportedAt: new Date().toISOString(),
+                        purpose: "Freedom v30 Analysis Input"
+                    },
+                    summary: {
+                        totalAssets: state.assets.length,
+                        totalValueUSD: totalValue.toFixed(2),
+                        totalCostUSD: totalCost.toFixed(2),
+                        totalReturnPct: totalCost > 0 ? ((totalValue - totalCost) / totalCost * 100).toFixed(2) : "0.00",
+                        exchangeRate: state.exchangeRate,
+                        totalValueKRW: Math.round(totalValue * state.exchangeRate)
+                    },
+                    market: {
+                        nasdaq: state.market.nasdaq,
+                        sp500: state.market.sp500,
+                        vix: state.market.vix,
+                        us10y: state.market.tnx,
+                        usdkrw: state.market.krw || state.exchangeRate
+                    },
+                    portfolio: state.assets.map(a => ({
+                        ticker: a.ticker,
+                        quantity: a.qty,
+                        avgCost: a.avg,
+                        currentPrice: a.price,
+                        valueUSD: (a.qty * a.price).toFixed(2),
+                        costUSD: (a.qty * a.avg).toFixed(2),
+                        returnPct: a.avg > 0 ? ((a.price - a.avg) / a.avg * 100).toFixed(2) : "0.00",
+                        type: a.type,
+                        sector: a.sector,
+                        buyRate: a.buyRate || state.exchangeRate,
+                        tradeReturn: state.tradeSums[a.ticker] || 0
+                    })),
+                    dividends: {
+                        totalRecords: state.dividends.length,
+                        recentDividends: state.dividends.slice(-10)
+                    },
+                    analysisRequest: [
+                        "1. 섹터 분산도 및 리스크 집중도 평가",
+                        "2. 개별 종목 펀더멘털 분석",
+                        "3. 현재 시장 상황 대비 포트폴리오 적합성",
+                        "4. 리밸런싱 및 추가 매수/매도 제안"
+                    ]
+                };
+                
+                const blob = new Blob([JSON.stringify(freedomData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `freedom_analysis_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                Toast.show('FREEDOM JSON 생성됨!', 'success');
             },
             importData: (event) => {
                 const file = event.target.files[0]; if (!file) return;
