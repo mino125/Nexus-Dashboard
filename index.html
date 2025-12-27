@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CELESTIAL NEXUS V64.0 (Enhanced Information)</title>
+    <title>CELESTIAL NEXUS V64.2 (Drag Sort)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -189,6 +189,276 @@
         }
         .sync-time.stale { color: var(--warning); opacity: 0.8; }
         .sync-time.very-stale { color: var(--danger); opacity: 1; }
+
+        /* ═══════════════════════════════════════════════════════════
+           V64.1 STYLES - Interactive Enhancement
+           ═══════════════════════════════════════════════════════════ */
+
+        /* ─── QUICK ACTIONS (Row Hover) ─── */
+        .quick-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .asset-row:hover .quick-actions {
+            opacity: 1;
+        }
+        .quick-action-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .quick-action-btn.edit:hover { border-color: var(--info); color: var(--info); }
+        .quick-action-btn.chart:hover { border-color: var(--warning); color: var(--warning); }
+        .quick-action-btn.delete:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* ─── TOAST IMPROVEMENTS ─── */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            top: auto;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 8px;
+            max-height: 300px;
+            overflow: hidden;
+        }
+        .toast-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: rgba(10, 15, 41, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            font-size: 12px;
+            animation: toastSlideIn 0.3s ease;
+            min-width: 200px;
+        }
+        .toast-item.toast-success { border-color: var(--success); }
+        .toast-item.toast-danger { border-color: var(--danger); }
+        .toast-item.toast-warning { border-color: var(--warning); }
+        .toast-item.toast-info { border-color: var(--info); }
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        .toast-success .toast-icon { background: rgba(74, 222, 128, 0.2); color: var(--success); }
+        .toast-danger .toast-icon { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
+        .toast-warning .toast-icon { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+        .toast-info .toast-icon { background: rgba(96, 165, 250, 0.2); color: var(--info); }
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .toast-exit { animation: toastSlideOut 0.3s ease forwards; }
+
+        /* ─── PROGRESS INDICATOR ─── */
+        .sync-progress-container {
+            position: relative;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+            overflow: hidden;
+            margin-top: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sync-progress-container.active { opacity: 1; }
+        .sync-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--info), var(--success));
+            border-radius: 1px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .refresh-btn-progress {
+            position: relative;
+        }
+        .refresh-btn-progress::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: var(--progress, 0%);
+            height: 2px;
+            background: var(--success);
+            border-radius: 1px;
+            transition: width 0.2s;
+        }
+
+        /* ─── SKELETON LOADING ─── */
+        .skeleton {
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.05) 25%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+        @keyframes skeletonShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .skeleton-circle { width: 32px; height: 32px; border-radius: 4px; }
+        .skeleton-text { height: 12px; border-radius: 2px; }
+        .skeleton-text.w-20 { width: 80px; }
+        .skeleton-text.w-16 { width: 64px; }
+        .skeleton-text.w-12 { width: 48px; }
+
+        /* ─── COMPACT MODE ─── */
+        .compact-mode .asset-row td { padding: 6px 8px !important; }
+        .compact-mode .asset-row .w-8 { width: 24px !important; height: 24px !important; }
+        .compact-mode .asset-row .text-[10px] { font-size: 8px !important; }
+        .compact-mode .asset-row .text-[11px] { font-size: 9px !important; }
+        .compact-mode .asset-row .text-[9px] { font-size: 8px !important; }
+        .compact-mode .sector-badge { padding: 1px 4px !important; font-size: 7px !important; }
+        .compact-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            opacity: 0.6;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .compact-toggle:hover { opacity: 1; }
+        .compact-toggle input { display: none; }
+        .compact-toggle-switch {
+            width: 28px;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 7px;
+            position: relative;
+            transition: background 0.2s;
+        }
+        .compact-toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .compact-toggle input:checked + .compact-toggle-switch {
+            background: var(--info);
+        }
+        .compact-toggle input:checked + .compact-toggle-switch::after {
+            transform: translateX(14px);
+        }
+
+        /* ─── DIVIDEND COUNTDOWN ─── */
+        .dividend-countdown {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 6px;
+            font-size: 10px;
+        }
+        .dividend-countdown-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dividend-countdown-ticker {
+            font-weight: 600;
+            color: var(--warning);
+        }
+        .dividend-countdown-days {
+            padding: 2px 6px;
+            background: rgba(255, 215, 0, 0.15);
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .dividend-countdown-days.imminent {
+            background: rgba(74, 222, 128, 0.2);
+            color: var(--success);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           V64.2 STYLES - Dashboard Tabs & Drag Sort
+           ═══════════════════════════════════════════════════════════ */
+
+        /* ─── DRAG SORT ─── */
+        .drag-handle {
+            cursor: grab;
+            opacity: 0.3;
+            padding: 4px;
+            transition: opacity 0.2s;
+        }
+        .drag-handle:hover { opacity: 0.8; }
+        .drag-handle:active { cursor: grabbing; }
+        .asset-row.dragging {
+            opacity: 0.5;
+            background: rgba(96, 165, 250, 0.1) !important;
+            border: 1px dashed rgba(96, 165, 250, 0.5);
+        }
+        .asset-row.drag-over {
+            border-top: 2px solid var(--info);
+        }
+        .asset-row.drag-over-bottom {
+            border-bottom: 2px solid var(--info);
+        }
+        .drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.8;
+            background: rgba(10, 15, 41, 0.95);
+            border: 1px solid var(--info);
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
 
         /* ─── COSMIC BACKGROUND ─── */
         .nebula-bg {
@@ -624,7 +894,7 @@
     <div class="nebula-bg"></div>
     <div class="stars"></div>
 
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+    <div id="toast-container"></div>
 
     <!-- VIX VIGNETTE OVERLAY -->
     <div id="vix-vignette" class="vix-vignette"></div>
@@ -651,7 +921,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold tracking-[0.2em] font-display text-white text-glow">CELESTIAL</h1>
-                        <div class="text-[10px] tracking-[0.3em] opacity-60 mt-1">NEXUS INTELLIGENCE V64</div>
+                        <div class="text-[10px] tracking-[0.3em] opacity-60 mt-1">NEXUS INTELLIGENCE V64.2</div>
                     </div>
                 </div>
 
@@ -759,14 +1029,41 @@
         <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
             
             <!-- ASSET TABLE (4/5) - PRIMARY + SECTOR 통합 -->
-            <div class="xl:col-span-4 glass-card glass-card-primary p-6">
-                <div class="flex justify-between items-end mb-6 pb-2 border-b border-white/10">
+            <div id="asset-card" class="xl:col-span-4 glass-card glass-card-primary p-6">
+                <div class="flex justify-between items-end mb-4 pb-2 border-b border-white/10">
                     <h2 class="text-lg font-display tracking-widest flex items-center gap-3 text-white">
                         <i class="fas fa-star text-celestial-gold text-xs"></i> STELLAR ASSETS
                     </h2>
-                    <div class="flex gap-3">
-                        <button onclick="NexusApp.refreshPrices()" id="refresh-btn" class="celestial-btn text-[10px]"><i class="fas fa-sync-alt" id="refresh-icon"></i></button>
-                        <button onclick="NexusApp.openAssetModal()" class="celestial-btn text-[10px]">IGNITE STAR</button>
+                    <div class="flex items-center gap-4">
+                        <!-- V64.1: Compact Mode Toggle -->
+                        <label class="compact-toggle">
+                            <input type="checkbox" id="compact-toggle" onchange="NexusApp.toggleCompact()">
+                            <span class="compact-toggle-switch"></span>
+                            <span>COMPACT</span>
+                        </label>
+                        <div class="flex gap-3">
+                            <button onclick="NexusApp.refreshPrices()" id="refresh-btn" class="celestial-btn text-[10px] refresh-btn-progress"><i class="fas fa-sync-alt" id="refresh-icon"></i></button>
+                            <button onclick="NexusApp.openAssetModal()" class="celestial-btn text-[10px]">IGNITE STAR</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- V64.1: Sync Progress Bar -->
+                <div id="sync-progress" class="sync-progress-container">
+                    <div id="sync-progress-bar" class="sync-progress-bar"></div>
+                </div>
+                
+                <!-- V64.1: Dividend Countdown -->
+                <div id="dividend-countdown" class="dividend-countdown mb-4">
+                    <i class="fas fa-calendar-alt text-celestial-gold"></i>
+                    <span class="text-white/60">NEXT DIVIDEND</span>
+                    <div class="dividend-countdown-item">
+                        <span class="dividend-countdown-ticker">PLTY</span>
+                        <span id="plty-countdown" class="dividend-countdown-days">D-?</span>
+                    </div>
+                    <div class="dividend-countdown-item">
+                        <span class="dividend-countdown-ticker">HOOY</span>
+                        <span id="hooy-countdown" class="dividend-countdown-days">D-?</span>
                     </div>
                 </div>
                 
@@ -851,7 +1148,8 @@
                             <table class="w-full text-sm font-light border-separate border-spacing-y-0">
                                 <thead class="text-[10px] font-sans uppercase tracking-widest sticky top-0 bg-[#0a0f29] z-10">
                                     <tr>
-                                        <th class="p-3 text-left border-b border-white/15 pl-4 font-medium opacity-85">Constellation</th>
+                                        <th class="p-2 w-8 border-b border-white/15"></th>
+                                        <th class="p-3 text-left border-b border-white/15 pl-2 font-medium opacity-85">Constellation</th>
                                         <th class="p-3 text-center border-b border-white/15 font-medium opacity-85">Return</th>
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">Avg</th>
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">Price</th>
@@ -859,7 +1157,7 @@
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">Val(₩)</th>
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">FX Rate</th>
                                         <th class="p-3 text-right border-b border-white/15 font-medium opacity-85">FX P/L</th>
-                                        <th class="p-3 text-center w-10 border-b border-white/15 font-medium opacity-85"></th>
+                                        <th class="p-3 text-center w-20 border-b border-white/15 font-medium opacity-85"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="asset-table" class="font-light text-gray-300"></tbody>
@@ -1128,7 +1426,7 @@
         </div>
 
         <footer class="text-center text-[10px] text-white/30 font-sans py-6 tracking-[0.3em] font-light">
-            CELESTIAL NEXUS V64.0 // ENHANCED INFORMATION EDITION
+            CELESTIAL NEXUS V64.2 // DRAG SORT EDITION
         </footer>
     </div>
 
@@ -1331,8 +1629,10 @@
 
     <script>
     // ═══════════════════════════════════════════════════════════════
-    // NEXUS CELESTIAL V64.0 (Enhanced Information Edition)
-    // Features: 델타 표시, 상대 시간, 경고 배지, Top/Bottom 3, 퍼센트 바, 변경 하이라이트
+    // NEXUS CELESTIAL V64.2 (Drag Sort Edition)
+    // V64.0: 델타 표시, 상대 시간, 경고 배지, Top/Bottom 3, 퍼센트 바, 변경 하이라이트
+    // V64.1: Quick Actions, Toast 개선, Progress 인디케이터, Compact 모드, 배당일 카운트다운
+    // V64.2: 드래그 정렬
     // ═══════════════════════════════════════════════════════════════
 
     const NexusApp = (() => {
@@ -1382,7 +1682,9 @@
             // V64 새 필드
             previousPrices: {},  // { ticker: prevPrice }
             previousMarket: { nasdaq: 0, sp500: 0, vix: 0, tnx: 0, krw: 0 },
-            lastSync: null  // Date timestamp
+            lastSync: null,  // Date timestamp
+            // V64.1 새 필드
+            compactMode: localStorage.getItem('nexus_compact') === 'true'
         };
 
         const charts = {};
@@ -1435,16 +1737,29 @@
             }
         };
 
+        // V64.1: 개선된 Toast 시스템
         const Toast = {
             show: (message, type = 'info', duration = 3000) => {
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
-                const colors = { success: '#69F0AE', danger: '#FF8A80', info: '#E0F7FA', warning: '#FFD700' };
-                toast.className = 'glass-card px-4 py-2 text-[11px] font-light flex items-center gap-2 backdrop-blur-md';
-                toast.style.borderColor = colors[type] || colors.info;
-                toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : type === 'danger' ? 'times' : type === 'warning' ? 'exclamation' : 'info'}-circle" style="color:${colors[type]}"></i> <span class="text-white">${message}</span>`;
+                const icons = { 
+                    success: 'check', 
+                    danger: 'times', 
+                    warning: 'exclamation', 
+                    info: 'info' 
+                };
+                toast.className = `toast-item toast-${type}`;
+                toast.innerHTML = `
+                    <div class="toast-icon"><i class="fas fa-${icons[type] || 'info'}"></i></div>
+                    <span class="text-white/90">${message}</span>
+                `;
                 container.appendChild(toast);
-                setTimeout(() => toast.remove(), duration);
+                
+                // 자동 제거 (애니메이션 포함)
+                setTimeout(() => {
+                    toast.classList.add('toast-exit');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
             }
         };
 
@@ -1693,8 +2008,41 @@
                 Render.timelineChart();
                 Render.dpsChart();
                 Render.market();
+                Render.dividendCountdown(); // V64.1
                 DividendLearning.render();
                 ScenarioSim.calculate();
+            },
+            // V64.1: 배당일 카운트다운
+            dividendCountdown: () => {
+                // PLTY, HOOY는 매주 목요일 배당 (가정)
+                const getNextThursday = () => {
+                    const now = new Date();
+                    const dayOfWeek = now.getDay(); // 0=일, 4=목
+                    let daysUntilThursday = (4 - dayOfWeek + 7) % 7;
+                    if (daysUntilThursday === 0 && now.getHours() >= 16) {
+                        daysUntilThursday = 7; // 오늘이 목요일이고 마켓 종료 후면 다음주
+                    }
+                    const nextThursday = new Date(now);
+                    nextThursday.setDate(now.getDate() + daysUntilThursday);
+                    return { days: daysUntilThursday, date: nextThursday };
+                };
+                
+                const { days, date } = getNextThursday();
+                const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                const displayText = days === 0 ? 'TODAY!' : `D-${days}`;
+                const isImminent = days <= 1;
+                
+                const pltyEl = document.getElementById('plty-countdown');
+                const hooyEl = document.getElementById('hooy-countdown');
+                
+                if (pltyEl) {
+                    pltyEl.innerText = `${displayText} (${dateStr})`;
+                    pltyEl.className = `dividend-countdown-days${isImminent ? ' imminent' : ''}`;
+                }
+                if (hooyEl) {
+                    hooyEl.innerText = `${displayText} (${dateStr})`;
+                    hooyEl.className = `dividend-countdown-days${isImminent ? ' imminent' : ''}`;
+                }
             },
             market: () => {
                 const updateEl = (id, val, isPct = false) => {
@@ -1794,8 +2142,16 @@
                     const priceDelta = Utils.getDeltaHtml(a.price, prevPrice);
 
                     tbody.innerHTML += `
-                        <tr class="${rowClass} transition-all border-b border-white/5 cursor-pointer" onclick="NexusApp.openEditModal(${i})">
-                            <td class="p-3 pl-4">
+                        <tr class="${rowClass} transition-all border-b border-white/5" data-index="${i}" draggable="true" 
+                            ondragstart="NexusApp.onDragStart(event, ${i})" 
+                            ondragover="NexusApp.onDragOver(event, ${i})" 
+                            ondragleave="NexusApp.onDragLeave(event)" 
+                            ondrop="NexusApp.onDrop(event, ${i})"
+                            ondragend="NexusApp.onDragEnd(event)">
+                            <td class="p-2 text-center">
+                                <span class="drag-handle" title="드래그하여 순서 변경"><i class="fas fa-grip-vertical"></i></span>
+                            </td>
+                            <td class="p-3 pl-2 cursor-pointer" onclick="NexusApp.openEditModal(${i})">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 flex items-center justify-center border border-white/20 bg-white/5 rounded">
                                         <span class="font-display text-[10px]" style="color: ${tickerColor};">${a.ticker}</span>
@@ -1839,7 +2195,13 @@
                             </td>
                             <td class="p-3 text-right text-[10px] text-celestial-gold font-light">₩${buyRate.toLocaleString()}</td>
                             <td class="p-3 text-right text-[10px] ${fxClass} font-light">${fxPL >= 0 ? '+' : ''}₩${Math.abs(fxPL).toLocaleString()}</td>
-                            <td class="p-3 text-center"><button onclick="event.stopPropagation(); NexusApp.removeAsset(${i})" class="opacity-30 hover:opacity-100 hover:text-v64-danger transition-all text-[11px]"><i class="fas fa-times"></i></button></td>
+                            <td class="p-3 text-center">
+                                <div class="quick-actions">
+                                    <button onclick="event.stopPropagation(); NexusApp.openEditModal(${i})" class="quick-action-btn edit" title="편집"><i class="fas fa-pen"></i></button>
+                                    <button onclick="event.stopPropagation(); NexusApp.showChart('${a.ticker}')" class="quick-action-btn chart" title="차트"><i class="fas fa-chart-line"></i></button>
+                                    <button onclick="event.stopPropagation(); NexusApp.removeAsset(${i})" class="quick-action-btn delete" title="삭제"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
                         </tr>`;
                 });
                 
@@ -2219,19 +2581,40 @@
                 
                 // 스피너 효과
                 const refreshIcon = document.getElementById('refresh-icon');
+                const refreshBtn = document.getElementById('refresh-btn');
                 refreshIcon.classList.add('spinner');
+                
+                // V64.1: Progress indicator 시작
+                const progressContainer = document.getElementById('sync-progress');
+                const progressBar = document.getElementById('sync-progress-bar');
+                progressContainer?.classList.add('active');
+                let progress = 0;
+                const totalItems = state.assets.length + 5; // assets + 5 indices
+                const updateProgress = () => {
+                    progress++;
+                    const pct = Math.min((progress / totalItems) * 100, 100);
+                    if (progressBar) progressBar.style.width = pct + '%';
+                    if (refreshBtn) refreshBtn.style.setProperty('--progress', pct + '%');
+                };
                 
                 document.getElementById('status-dot').className = 'status-dot loading';
                 document.getElementById('status-text').innerText = 'SYNC...';
-                await API.fetchMarketData();
-                let success = 0;
-                await Promise.all(state.assets.map(async (asset, i) => {
-                    const price = await API.fetchStockPrice(asset.ticker);
-                    if (price > 0) { state.assets[i].price = price; success++; }
-                }));
                 
-                // 스피너 중지
+                await API.fetchMarketData();
+                updateProgress(); updateProgress(); updateProgress(); updateProgress(); updateProgress(); // 5 indices
+                
+                let success = 0;
+                for (let i = 0; i < state.assets.length; i++) {
+                    const price = await API.fetchStockPrice(state.assets[i].ticker);
+                    if (price > 0) { state.assets[i].price = price; success++; }
+                    updateProgress();
+                }
+                
+                // 스피너 중지 & Progress 완료
                 refreshIcon.classList.remove('spinner');
+                progressContainer?.classList.remove('active');
+                if (progressBar) progressBar.style.width = '0%';
+                if (refreshBtn) refreshBtn.style.setProperty('--progress', '0%');
                 
                 if (success > 0) {
                     document.getElementById('status-dot').className = 'status-dot connected';
@@ -2255,6 +2638,89 @@
                 
                 syncTimeEl.innerText = state.lastSync ? `· ${text}` : '--';
                 syncTimeEl.className = `sync-time ${stateClass}`;
+            },
+            // V64.1: Compact 모드 토글
+            toggleCompact: () => {
+                const assetCard = document.getElementById('asset-card');
+                const toggle = document.getElementById('compact-toggle');
+                state.compactMode = toggle?.checked || false;
+                
+                if (state.compactMode) {
+                    assetCard?.classList.add('compact-mode');
+                } else {
+                    assetCard?.classList.remove('compact-mode');
+                }
+                localStorage.setItem('nexus_compact', state.compactMode);
+            },
+            // V64.1: 차트 보기 (Yahoo Finance)
+            showChart: (ticker) => {
+                window.open(`https://finance.yahoo.com/quote/${ticker}/chart`, '_blank');
+            },
+            // V64.2: 드래그 정렬 함수들
+            dragState: { dragging: null, overIndex: null },
+            onDragStart: (e, index) => {
+                Actions.dragState.dragging = index;
+                e.target.closest('tr').classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', index);
+                
+                // 고스트 이미지 커스텀
+                const ghost = document.createElement('div');
+                ghost.className = 'drag-ghost';
+                ghost.innerText = state.assets[index]?.ticker || 'ASSET';
+                document.body.appendChild(ghost);
+                e.dataTransfer.setDragImage(ghost, 50, 20);
+                setTimeout(() => ghost.remove(), 0);
+            },
+            onDragOver: (e, index) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                
+                const row = e.target.closest('tr');
+                if (!row || Actions.dragState.dragging === index) return;
+                
+                // 기존 drag-over 클래스 제거
+                document.querySelectorAll('.drag-over, .drag-over-bottom').forEach(el => {
+                    el.classList.remove('drag-over', 'drag-over-bottom');
+                });
+                
+                // 드래그 위치에 따라 위/아래 표시
+                const rect = row.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                if (e.clientY < midY) {
+                    row.classList.add('drag-over');
+                } else {
+                    row.classList.add('drag-over-bottom');
+                }
+                Actions.dragState.overIndex = index;
+            },
+            onDragLeave: (e) => {
+                const row = e.target.closest('tr');
+                if (row) {
+                    row.classList.remove('drag-over', 'drag-over-bottom');
+                }
+            },
+            onDrop: (e, targetIndex) => {
+                e.preventDefault();
+                const sourceIndex = Actions.dragState.dragging;
+                if (sourceIndex === null || sourceIndex === targetIndex) return;
+                
+                // 배열 재정렬
+                const [removed] = state.assets.splice(sourceIndex, 1);
+                const newIndex = sourceIndex < targetIndex ? targetIndex : targetIndex;
+                state.assets.splice(newIndex, 0, removed);
+                
+                Utils.saveState();
+                Render.assetTable();
+                Render.coreChart();
+                Toast.show('순서 변경됨', 'success');
+            },
+            onDragEnd: (e) => {
+                Actions.dragState.dragging = null;
+                Actions.dragState.overIndex = null;
+                document.querySelectorAll('.dragging, .drag-over, .drag-over-bottom').forEach(el => {
+                    el.classList.remove('dragging', 'drag-over', 'drag-over-bottom');
+                });
             },
             toggleTheme: () => {
                 state.theme = state.theme === 'dark' ? 'light' : 'dark';
@@ -2519,6 +2985,13 @@
 
         const init = () => {
             document.documentElement.className = state.theme;
+            
+            // V64.1: Compact mode 초기화
+            if (state.compactMode) {
+                document.getElementById('compact-toggle').checked = true;
+                document.getElementById('asset-card')?.classList.add('compact-mode');
+            }
+            
             Render.all();
             updateClock();
             setInterval(updateClock, 1000);
@@ -2531,6 +3004,9 @@
 
             // V64: 상대 시간 주기적 업데이트 (30초마다)
             setInterval(() => Actions.updateSyncTime(), 30000);
+            
+            // V64.1: 배당일 카운트다운 매일 자정에 업데이트
+            setInterval(() => Render.dividendCountdown(), 3600000);
         };
 
         return { init, ...Actions };
